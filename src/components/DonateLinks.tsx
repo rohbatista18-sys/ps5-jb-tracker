@@ -54,6 +54,7 @@ export default function DonateLinks({ nickname, donations, hasNote, dict, newTab
       </ul>
       )}
       {hasNote && <p className={styles.note}>{dict.noDonation}</p>}
+      {donations.length > 0 && <p className={styles.purpose}>{dict.purpose}</p>}
     </div>
   );
 }

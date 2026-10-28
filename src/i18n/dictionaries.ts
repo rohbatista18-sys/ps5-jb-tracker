@@ -60,6 +60,7 @@ const en = {
     support: "Support",
     supportName: "Support {name}",
     noDonation: "No donation link published",
+    purpose: "Donations support the dev's research. They do NOT buy the jailbreak.",
     address: "{label} address",
     copy: "Copy",
     copyAria: "Copy {label}: {value}",
@@ -74,6 +75,8 @@ const en = {
       "Unofficial aggregator. We do not host exploits. AI-generated summaries may contain errors — check the repository.",
     meta: "Data: GitHub API · refreshed every ~10 min",
     source: "This site's source code on GitHub",
+    donationWarning:
+      "Donations only support the developers' work and are NOT a way to get the jailbreak. No developer will ever ask for donations in exchange for delivering the jailbreak. If someone does, it is a scam.",
     donations:
       "Donations have no affiliation with Forever-Necessary: every donation link goes straight to the developer's own page, and this site receives nothing.",
     nonprofit: "This is a non-profit site.",
@@ -144,6 +147,7 @@ const es: Dictionary = {
     support: "Apoya",
     supportName: "Apoya a {name}",
     noDonation: "Sin enlace de donación publicado",
+    purpose: "Las donaciones apoyan la investigación del dev. NO compran el jailbreak.",
     address: "dirección {label}",
     copy: "Copiar",
     copyAria: "Copiar {label}: {value}",
@@ -158,6 +162,8 @@ const es: Dictionary = {
       "Agregador no oficial. No alojamos exploits. Los resúmenes generados por IA pueden contener errores — revisa el repositorio.",
     meta: "Datos: API de GitHub · actualizado cada ~10 min",
     source: "Código fuente de este sitio en GitHub",
+    donationWarning:
+      "Las donaciones solo apoyan el trabajo de los desarrolladores y NO son para obtener el jailbreak. Ningún desarrollador pedirá donaciones a cambio de entregar el jailbreak. Si alguien lo hace, es una estafa.",
     donations:
       "Las donaciones no tienen ninguna afiliación con Forever-Necessary: cada enlace de donación lleva directamente a la página del propio desarrollador y este sitio no recibe nada.",
     nonprofit: "Este sitio no tiene fines de lucro.",
@@ -226,6 +232,7 @@ const pt: Dictionary = {
     support: "Apoie",
     supportName: "Apoie {name}",
     noDonation: "Sem link de doação publicado",
+    purpose: "Doações apoiam a pesquisa do dev. NÃO compram o jailbreak.",
     address: "endereço {label}",
     copy: "Copiar",
     copyAria: "Copiar {label}: {value}",
@@ -240,6 +247,8 @@ const pt: Dictionary = {
       "Agregador não oficial. Não hospedamos exploits. Resumos gerados por IA podem conter erros — confira o repositório.",
     meta: "Dados: API do GitHub · atualizado a cada ~10 min",
     source: "Código-fonte deste site no GitHub",
+    donationWarning:
+      "As doações servem apenas para apoiar o trabalho dos desenvolvedores e NÃO são para obter o jailbreak. Nenhum desenvolvedor pedirá doações em troca de entregar o jailbreak. Se alguém pedir, é golpe.",
     donations:
       "As doações não têm nenhuma afiliação com o Forever-Necessary: cada link de doação leva direto para a página do próprio desenvolvedor, e este site não recebe nada.",
     nonprofit: "Este site não tem fins lucrativos.",

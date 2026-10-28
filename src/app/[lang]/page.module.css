@@ -182,3 +182,12 @@
   font-size: 1rem;
   color: var(--ink-faint);
 }
+
+.notice .warning {
+  color: var(--yellow);
+}
+
+.notice .warning::before {
+  content: "⚠ ";
+  color: var(--yellow);
+}

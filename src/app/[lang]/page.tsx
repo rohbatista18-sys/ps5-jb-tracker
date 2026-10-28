@@ -75,6 +75,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
 
       <footer className={styles.footer}>
         <div className={styles.notice}>
+          <p className={styles.warning}>{dict.footer.donationWarning}</p>
           <p>{dict.footer.donations}</p>
           <p>{dict.footer.nonprofit}</p>
           <p>{dict.footer.privacy}</p>

@@ -77,3 +77,13 @@
   font-size: 1.0625rem;
   color: var(--ink-dim);
 }
+
+.purpose {
+  font-size: 1rem;
+  line-height: 1.3;
+  color: var(--yellow);
+}
+
+.purpose::before {
+  content: "⚠ ";
+}
