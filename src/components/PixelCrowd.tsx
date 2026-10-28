@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { getVisitorId, usePresence } from "@/hooks/usePresence";
-import { SPRITES, rasterize, rasterizeLabel } from "./sprites";
+import { EMOTE_EVENT, REACTIONS, type EmoteDetail } from "@/lib/reactions-config";
+import { SPRITES, rasterize, rasterizeFlagBR, rasterizeLabel } from "./sprites";
 import styles from "./PixelCrowd.module.css";
 
 export const MAX_SPRITES = 40;
@@ -13,6 +14,19 @@ const LANE_ALPHA = [0.65, 0.82, 1];
 const SELF_ALPHA = 1;
 const POP_S = 0.45;
 const FADE_S = 1.6;
+const EMOTE_MS = 2200;
+const EMOTE_STAGGER_MS = 280;
+const EMOTE_PENDING_MAX_MS = 60_000;
+const MAX_EMOTES = 8;
+const EMOJI_FONT = '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
+
+interface Emote {
+  emoji: string;
+  shout?: string;
+  created: number;
+  start: number | null; // null until the stage is on screen, so the visitor actually sees it
+  jitter: number;
+}
 
 type Mode = "walk" | "idle" | "jump";
 
@@ -34,6 +48,7 @@ interface Actor {
 
 export interface Crowd {
   setCount(n: number): void;
+  emote(emoji: string, shout?: string): void;
   destroy(): void;
 }
 
@@ -52,6 +67,7 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const cache = new Map<string, HTMLCanvasElement>();
   const label = rasterizeLabel(selfLabel, "#ffd166");
+  const flagBR = rasterizeFlagBR();
   const actors: Actor[] = [];
   const seed = hash(selfSeed);
   let target = 1;
@@ -61,6 +77,11 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
   let raf = 0;
   let last = 0;
   let clock = 0;
+  let emotes: Emote[] = [];
+  const pixelFont = getComputedStyle(document.documentElement).getPropertyValue("--font-pixel").trim() || "monospace";
+  const duration = (e: Emote) => (e.shout ? EMOTE_MS * 1.6 : EMOTE_MS);
+  let onScreen = true;
+  let staticTimer: ReturnType<typeof setTimeout> | undefined;
 
   const img = (a: Actor, frame: 0 | 1) => {
     const key = `${a.sprite}:${a.palette}:${frame}:${a.dir}`;
@@ -161,6 +182,71 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
     }
   };
 
+  // Emojis the visitor sent rise above their own sprite and fade out.
+  const drawEmotes = (x: number, top: number, animated: boolean) => {
+    const now = performance.now();
+    let nextStart = now;
+    for (const e of emotes) {
+      if (e.start === null && onScreen) {
+        e.start = Math.max(nextStart, now);
+        nextStart = e.start + EMOTE_STAGGER_MS;
+      } else if (e.start !== null) nextStart = Math.max(nextStart, e.start + EMOTE_STAGGER_MS);
+    }
+    emotes = emotes.filter((e) =>
+      e.start === null ? now - e.created < EMOTE_PENDING_MAX_MS : now - e.start < duration(e),
+    );
+    const size = 7 * px;
+    ctx.font = `${size}px ${EMOJI_FONT}`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    for (const e of emotes) {
+      if (e.start === null || e.start > now) continue;
+      const t = (now - e.start) / duration(e);
+      const rise = animated ? Math.round(t * 4) * px : 0; // rises in whole pixel steps, 8-bit style
+      const scale = animated && t < 0.15 ? 0.6 + (t / 0.15) * 0.4 : 1;
+      ctx.globalAlpha = animated ? (t < 0.1 ? t / 0.1 : t > 0.6 ? Math.max(0, (1 - t) / 0.4) : 1) : 1;
+      ctx.save();
+      ctx.translate(x + e.jitter * px, top - rise);
+      ctx.scale(scale, scale);
+      if (e.emoji === "🇧🇷") {
+        const cell = Math.max(1, Math.round(px / 2));
+        const fw = flagBR.width * cell;
+        const fh = flagBR.height * cell;
+        ctx.drawImage(flagBR, -fw / 2, -fh, fw, fh);
+      } else ctx.fillText(e.emoji, 0, 0);
+      ctx.restore();
+      if (e.shout) drawShout(e.shout, x + e.jitter * px, top - rise - size / 2, (size * scale) / 2);
+      ctx.font = `${size}px ${EMOJI_FONT}`;
+    }
+    ctx.globalAlpha = 1;
+  };
+
+  // Pixel speech bubble in the page's pixel font, beside the emoji (right side, or left if it
+  // would not fit), clamped inside the stage.
+  const drawShout = (text: string, x: number, cy: number, half: number) => {
+    const fs = 2 * px;
+    ctx.font = `${fs}px ${pixelFont}, monospace`;
+    const pad = 2 * px;
+    const tw = Math.ceil(ctx.measureText(text).width);
+    const bw = tw + pad * 2;
+    const bh = fs + pad * 2;
+    const right = x + half + 2 * px;
+    const left = x - half - 2 * px - bw;
+    const rawX = right + bw + px <= W ? right : left >= px ? left : (W - bw) / 2;
+    const bx = Math.round(Math.min(Math.max(rawX, px), W - bw - px) / px) * px;
+    const by = Math.max(px, Math.round((cy - bh / 2) / px) * px);
+    ctx.fillStyle = "#009c3b";
+    ctx.fillRect(bx - px, by - px, bw + 2 * px, bh + 2 * px);
+    ctx.fillStyle = "#0b0b14";
+    ctx.fillRect(bx, by, bw, bh);
+    ctx.fillStyle = "#ffdf00";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText(text, bx + pad, by + pad);
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+  };
+
   const draw = (animated: boolean) => {
     ctx.clearRect(0, 0, W, H);
     const order = actors.filter((a) => a.age >= 0).sort((a, b) => a.lane - b.lane || Number(a.self) - Number(b.self));
@@ -194,6 +280,8 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
         ctx.fillRect(ax - lp, ly + 6 * lp, 3 * lp, lp);
         ctx.fillRect(ax, ly + 7 * lp, lp, lp);
       }
+
+      if (a.self && pop === 1) drawEmotes(cx + w / 2, base - h - hop - 12 * Math.max(1, Math.round(px / 2)), animated);
 
       if (animated && a.age < POP_S) {
         const t = a.age / POP_S;
@@ -242,6 +330,20 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
   actors.forEach((a) => (a.age = 0));
   start();
 
+  // Static (reduced-motion) mode has no loop: redraw when an emote appears and once it expires.
+  const redrawStatic = () => {
+    if (raf) return;
+    draw(false);
+    clearTimeout(staticTimer);
+    if (emotes.length) staticTimer = setTimeout(redrawStatic, EMOTE_MS);
+  };
+
+  const observer = new IntersectionObserver(([entry]) => {
+    onScreen = entry.isIntersecting;
+    if (onScreen) redrawStatic();
+  });
+  observer.observe(canvas);
+
   window.addEventListener("resize", onResize);
   document.addEventListener("visibilitychange", start);
   motionQuery.addEventListener("change", start);
@@ -252,8 +354,15 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
       reconcile(motionQuery.matches);
       if (!raf) draw(false);
     },
+    emote(emoji, shout) {
+      const e: Emote = { emoji, shout, created: performance.now(), start: null, jitter: shout ? 0 : Math.round(rand(-3, 3)) };
+      emotes = [...emotes, e].slice(-MAX_EMOTES);
+      redrawStatic();
+    },
     destroy() {
       cancelAnimationFrame(raf);
+      clearTimeout(staticTimer);
+      observer.disconnect();
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", start);
       motionQuery.removeEventListener("change", start);
@@ -282,6 +391,16 @@ export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsS
   useEffect(() => {
     crowdRef.current?.setCount(online ?? 1);
   }, [online]);
+
+  useEffect(() => {
+    const onEmote = (e: Event) => {
+      const detail = (e as CustomEvent<Partial<EmoteDetail> | null>).detail;
+      const r = REACTIONS.find((x) => x.key === detail?.key);
+      if (r) crowdRef.current?.emote(r.emoji, "shout" in r ? r.shout : undefined);
+    };
+    window.addEventListener(EMOTE_EVENT, onEmote);
+    return () => window.removeEventListener(EMOTE_EVENT, onEmote);
+  }, []);
 
   const extra = online !== null && online > MAX_SPRITES ? online - MAX_SPRITES : 0;
 

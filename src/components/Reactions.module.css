@@ -55,6 +55,31 @@
   transform: translateY(2px) scale(0.96);
 }
 
+/* Dev-exclusive reaction: full width, Brazil green/yellow pixel frame */
+.exclusive {
+  width: calc(100% - 12px);
+  margin: 6px auto 4px;
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  background: linear-gradient(90deg, rgb(0 156 59 / 0.22), rgb(255 223 0 / 0.12));
+  box-shadow: 0 0 0 2px #009c3b, 0 0 0 4px var(--bg-deep), 0 0 0 6px #ffdf00;
+}
+
+.exclusive:hover {
+  box-shadow: 0 0 0 2px #ffdf00, 0 0 0 4px var(--bg-deep), 0 0 0 6px #009c3b, 0 0 14px rgb(255 223 0 / 0.4);
+}
+
+.shout {
+  flex: 1;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  line-height: 1.4;
+  color: #ffdf00;
+  overflow-wrap: anywhere;
+}
+
 .emoji {
   font-size: 1.125rem;
   line-height: 1;

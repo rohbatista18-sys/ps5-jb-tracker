@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { addReaction, getAllReactions, isRepoId } from "@/lib/reactions";
-import { isReactionKey } from "@/lib/reactions-config";
+import { isReactionAllowed, isReactionKey } from "@/lib/reactions-config";
 import { rateLimit } from "@/lib/rate-limit";
 import { blockUntilWindowEnd, clientIp, isForeignOrigin, locallyBlocked, readBody } from "@/lib/request";
 
@@ -43,6 +43,8 @@ export async function POST(req: NextRequest) {
   } catch {
     return json({ error: "invalid json" }, 400);
   }
-  if (!isRepoId(data?.repo) || !isReactionKey(data?.reaction)) return json({ error: "invalid reaction" }, 400);
+  if (!isRepoId(data?.repo) || !isReactionKey(data?.reaction) || !isReactionAllowed(data.repo, data.reaction)) {
+    return json({ error: "invalid reaction" }, 400);
+  }
   return json({ repo: data.repo, counts: await addReaction(data.repo, data.reaction) });
 }
