@@ -38,6 +38,11 @@ export const env = {
   get cronSecret() {
     return read("CRON_SECRET");
   },
+  /** Page views counted before the site tracked them (e.g. read from the Vercel dashboard). */
+  get pageviewsBaseline() {
+    const n = Number(read("PAGEVIEWS_BASELINE"));
+    return Number.isSafeInteger(n) && n > 0 ? n : 0;
+  },
   get isProduction() {
     return process.env.NODE_ENV === "production";
   },

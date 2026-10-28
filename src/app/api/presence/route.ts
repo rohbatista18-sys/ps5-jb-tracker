@@ -14,7 +14,7 @@ function json(body: PresenceResponse | { error: string }, status = 200, extra: H
   return Response.json(body, { status, headers: { ...NO_STORE, ...extra } });
 }
 
-type Parsed = { id: string; leave: boolean; visit: boolean } | { error: string; status: number };
+type Parsed = { id: string; leave: boolean; view: boolean } | { error: string; status: number };
 
 async function parseRequest(req: NextRequest): Promise<Parsed> {
   const raw = await readBody(req, MAX_BODY_BYTES);
@@ -26,9 +26,10 @@ async function parseRequest(req: NextRequest): Promise<Parsed> {
     return { error: "invalid json", status: 400 };
   }
   if (typeof data !== "object" || data === null) return { error: "invalid body", status: 400 };
-  const { id, leave: isLeave, visit } = data as { id?: unknown; leave?: unknown; visit?: unknown };
+  const { id, leave: isLeave, view, visit } = data as { id?: unknown; leave?: unknown; view?: unknown; visit?: unknown };
   if (typeof id !== "string" || !UUID_V4.test(id)) return { error: "invalid id", status: 400 };
-  return { id: id.toLowerCase(), leave: isLeave === true, visit: visit === true };
+  // `visit` is what clients sent before the counter switched to page views; treat it as a view.
+  return { id: id.toLowerCase(), leave: isLeave === true, view: view === true || visit === true };
 }
 
 async function guard(req: NextRequest): Promise<Response | null> {
@@ -47,7 +48,7 @@ async function handleWrite(req: NextRequest, forceLeave: boolean): Promise<Respo
   if (limited) return limited;
   const parsed = await parseRequest(req);
   if ("error" in parsed) return json({ error: parsed.error }, parsed.status);
-  return json(forceLeave || parsed.leave ? await leave(parsed.id) : await heartbeat(parsed.id, parsed.visit));
+  return json(forceLeave || parsed.leave ? await leave(parsed.id) : await heartbeat(parsed.id, parsed.view));
 }
 
 export async function GET(req: NextRequest) {

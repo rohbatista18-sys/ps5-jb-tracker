@@ -418,7 +418,7 @@ export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsS
         {visits !== null && visits > 0 && (
           <span className={styles.visits}>
             <span className={styles.visitsLong}>{visitsLabel.replace("{n}", visits.toLocaleString())}</span>
-            <span className={styles.visitsShort}>{visitsShortLabel.replace("{n}", visits.toLocaleString())}</span>
+            <span className={styles.visitsShort}>{visitsShortLabel.replace("{n}", new Intl.NumberFormat(undefined, { notation: "compact" }).format(visits))}</span>
           </span>
         )}
       </div>

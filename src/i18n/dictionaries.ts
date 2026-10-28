@@ -66,7 +66,7 @@ const en = {
     error: "Error",
     errorSr: "Could not copy",
   },
-  presence: { online: "online now", you: "YOU", visits: "{n} visitors so far", visitsShort: "{n} total" },
+  presence: { online: "online now", you: "YOU", visits: "{n} views so far", visitsShort: "{n} views" },
   footer: {
     disclaimer:
       "Unofficial aggregator. We do not host exploits. AI-generated summaries may contain errors — check the repository.",
@@ -148,7 +148,7 @@ const es: Dictionary = {
     error: "Error",
     errorSr: "No se pudo copiar",
   },
-  presence: { online: "en línea ahora", you: "TÚ", visits: "{n} visitantes hasta ahora", visitsShort: "{n} en total" },
+  presence: { online: "en línea ahora", you: "TÚ", visits: "{n} accesos hasta ahora", visitsShort: "{n} accesos" },
   footer: {
     disclaimer:
       "Agregador no oficial. No alojamos exploits. Los resúmenes generados por IA pueden contener errores — revisa el repositorio.",
@@ -228,7 +228,7 @@ const pt: Dictionary = {
     error: "Erro",
     errorSr: "Não foi possível copiar",
   },
-  presence: { online: "online agora", you: "VOCÊ", visits: "{n} visitantes até agora", visitsShort: "{n} no total" },
+  presence: { online: "online agora", you: "VOCÊ", visits: "{n} acessos até agora", visitsShort: "{n} acessos" },
   footer: {
     disclaimer:
       "Agregador não oficial. Não hospedamos exploits. Resumos gerados por IA podem conter erros — confira o repositório.",

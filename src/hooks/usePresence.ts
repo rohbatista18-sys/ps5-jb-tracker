@@ -35,24 +35,6 @@ export function getVisitorId(): string {
   }
 }
 
-// Per-browser "already counted" flag for the total-visitors counter. Only the flag lives here;
-// the server keeps a single number and never learns or stores who was counted.
-const COUNTED_KEY = "ps5jb:counted";
-
-function isFirstVisit(): boolean {
-  try {
-    return localStorage.getItem(COUNTED_KEY) !== "1";
-  } catch {
-    return false;
-  }
-}
-
-function markCounted() {
-  try {
-    localStorage.setItem(COUNTED_KEY, "1");
-  } catch {}
-}
-
 export function usePresence(): { online: number | null; visits: number | null } {
   const [online, setOnline] = useState<number | null>(null);
   const [visits, setVisits] = useState<number | null>(null);
@@ -64,6 +46,8 @@ export function usePresence(): { online: number | null; visits: number | null } 
     let failures = 0;
     let lastBeat = 0;
     let active = true;
+    // The first successful heartbeat of each page load also counts one page view.
+    let viewCounted = false;
 
     const schedule = (ms: number) => {
       clearTimeout(timer);
@@ -81,18 +65,18 @@ export function usePresence(): { online: number | null; visits: number | null } 
       controller?.abort();
       controller = new AbortController();
       lastBeat = Date.now();
-      const visit = isFirstVisit();
+      const view = !viewCounted;
       let res: Response | undefined;
       try {
         res = await fetch(ENDPOINT, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify(visit ? { id, visit: true } : { id }),
+          body: JSON.stringify(view ? { id, view: true } : { id }),
           cache: "no-store",
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`presence ${res.status}`);
-        if (visit) markCounted();
+        if (view) viewCounted = true;
         const data = (await res.json()) as Partial<PresenceResponse>;
         if (typeof data.online === "number" && Number.isFinite(data.online)) {
           setOnline(Math.max(0, Math.floor(data.online)));
