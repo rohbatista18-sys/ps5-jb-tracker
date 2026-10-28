@@ -72,4 +72,5 @@ export interface DashboardData {
 
 export interface PresenceResponse {
   online: number;
+  visits: number; // all-time unique browsers (counted once per browser, no identifier stored)
 }

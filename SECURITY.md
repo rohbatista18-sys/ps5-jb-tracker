@@ -113,3 +113,9 @@ Three parallel reviews (secrets/server, privacy/retention, web attack surface). 
 - Add a Vercel Firewall rate-limit rule on `/api/*`.
 - Upstash: region near the function region, eviction on, no backups.
 - Azure: set a spending cap / token quota on the deployment; rotate the key if it was ever shared.
+
+## Reactions and visitor total (2026-10-28)
+
+- **`/api/reactions`:** only the 8 fixed positive reaction keys and the 3 repo ids are accepted (raw emoji or other keys → 400). Writes need a same-origin `Origin`, a body of at most 120 bytes and at most 20 per minute per IP (reads: 30/min); limited clients are short-circuited before Redis. Redis keeps one aggregate hash per dev (`reactions:v1:<id>`) — no record of who reacted.
+- **Visitor total:** a single counter (`visits:v1`). The browser keeps a local "already counted" flag and asks to be counted once; the server only increments when that flag arrives together with a brand-new tab id, so replaying it cannot inflate the number. No identifier is stored for this.
+- **CRT overlay:** sized with `lvh` and extended past the viewport so mobile toolbars and overscroll never expose an uncovered strip.

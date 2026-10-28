@@ -3,6 +3,7 @@ import { INTL_TAG, type Locale } from "@/i18n/config";
 import { fill, type Dictionary } from "@/i18n/dictionaries";
 import DonateLinks from "./DonateLinks";
 import ProgressBar from "./ProgressBar";
+import Reactions from "./Reactions";
 import RelativeTime from "./RelativeTime";
 import styles from "./RepoCard.module.css";
 
@@ -73,7 +74,7 @@ export default function RepoCard({ repo, locale, dict }: Props) {
         />
       </header>
 
-      {/* Card children map 1:1 to the shared subgrid rows: header, progress, summary, updated, commits. */}
+      {/* Card children map 1:1 to the shared subgrid rows: header, progress, summary, updated, commits, reactions. */}
       <ProgressBar stages={summary.stages} dict={dict.progress} />
 
       <section className={styles.summary} aria-label={t.summary}>
@@ -111,6 +112,12 @@ export default function RepoCard({ repo, locale, dict }: Props) {
           </ol>
         </section>
       )}
+      <Reactions
+        repo={config.id}
+        nickname={config.nickname}
+        locale={INTL_TAG[locale]}
+        text={dict.reactions}
+      />
     </article>
   );
 }

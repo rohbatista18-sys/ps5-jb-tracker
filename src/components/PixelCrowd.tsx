@@ -261,8 +261,15 @@ export function createCrowd(canvas: HTMLCanvasElement, selfSeed: string, selfLab
   };
 }
 
-export default function PixelCrowd({ onlineLabel, youLabel }: { onlineLabel: string; youLabel: string }) {
-  const { online } = usePresence();
+interface Props {
+  onlineLabel: string;
+  youLabel: string;
+  visitsLabel: string;
+  visitsShortLabel: string;
+}
+
+export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsShortLabel }: Props) {
+  const { online, visits } = usePresence();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const crowdRef = useRef<Crowd | null>(null);
 
@@ -289,6 +296,12 @@ export default function PixelCrowd({ onlineLabel, youLabel }: { onlineLabel: str
           {online ?? "…"} {onlineLabel}
         </span>
         {extra > 0 && <span className={styles.extra}>+{extra}</span>}
+        {visits !== null && visits > 0 && (
+          <span className={styles.visits}>
+            <span className={styles.visitsLong}>{visitsLabel.replace("{n}", visits.toLocaleString())}</span>
+            <span className={styles.visitsShort}>{visitsShortLabel.replace("{n}", visits.toLocaleString())}</span>
+          </span>
+        )}
       </div>
     </>
   );

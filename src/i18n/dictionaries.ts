@@ -46,6 +46,13 @@ const en = {
       release: "Full chain released",
     },
   },
+  reactions: {
+    title: "Send good vibes",
+    total: "{n} sent",
+    send: "Send",
+    slowDown: "Easy there! Try again in a minute.",
+    names: { heart: "Love", clap: "Applause", rocket: "Let's go", fire: "On fire", muscle: "Strength", pray: "Thank you", party: "Celebrate", trophy: "Champion" },
+  },
   overall: { title: "Overall summary", generatedAt: "Generated", loading: "Loading" },
   donate: {
     support: "Support",
@@ -59,7 +66,7 @@ const en = {
     error: "Error",
     errorSr: "Could not copy",
   },
-  presence: { online: "online now", you: "YOU" },
+  presence: { online: "online now", you: "YOU", visits: "{n} visitors so far", visitsShort: "{n} total" },
   footer: {
     disclaimer:
       "Unofficial aggregator. We do not host exploits. AI-generated summaries may contain errors — check the repository.",
@@ -121,6 +128,13 @@ const es: Dictionary = {
       release: "Cadena completa publicada",
     },
   },
+  reactions: {
+    title: "Manda buena vibra",
+    total: "{n} enviados",
+    send: "Enviar",
+    slowDown: "¡Con calma! Intenta de nuevo en un minuto.",
+    names: { heart: "Amor", clap: "Aplausos", rocket: "¡Vamos!", fire: "En llamas", muscle: "Fuerza", pray: "Gracias", party: "Celebrar", trophy: "Campeón" },
+  },
   overall: { title: "Resumen general", generatedAt: "Generado", loading: "Cargando" },
   donate: {
     support: "Apoya",
@@ -134,7 +148,7 @@ const es: Dictionary = {
     error: "Error",
     errorSr: "No se pudo copiar",
   },
-  presence: { online: "en línea ahora", you: "TÚ" },
+  presence: { online: "en línea ahora", you: "TÚ", visits: "{n} visitantes hasta ahora", visitsShort: "{n} en total" },
   footer: {
     disclaimer:
       "Agregador no oficial. No alojamos exploits. Los resúmenes generados por IA pueden contener errores — revisa el repositorio.",
@@ -194,6 +208,13 @@ const pt: Dictionary = {
       release: "Cadeia completa publicada",
     },
   },
+  reactions: {
+    title: "Mande um salve",
+    total: "{n} enviados",
+    send: "Enviar",
+    slowDown: "Calma! Tente de novo em um minuto.",
+    names: { heart: "Amor", clap: "Aplausos", rocket: "Bora!", fire: "Pegando fogo", muscle: "Força", pray: "Obrigado", party: "Comemorar", trophy: "Campeão" },
+  },
   overall: { title: "Resumo geral", generatedAt: "Gerado em", loading: "Carregando" },
   donate: {
     support: "Apoie",
@@ -207,7 +228,7 @@ const pt: Dictionary = {
     error: "Erro",
     errorSr: "Não foi possível copiar",
   },
-  presence: { online: "online agora", you: "VOCÊ" },
+  presence: { online: "online agora", you: "VOCÊ", visits: "{n} visitantes até agora", visitsShort: "{n} no total" },
   footer: {
     disclaimer:
       "Agregador não oficial. Não hospedamos exploits. Resumos gerados por IA podem conter erros — confira o repositório.",

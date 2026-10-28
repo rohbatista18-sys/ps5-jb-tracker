@@ -67,7 +67,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   return (
     <html lang={INTL_TAG[lang]} className={`${pixel.variable} ${body.variable}`}>
       <body>
-        <PixelCrowd onlineLabel={presence.online} youLabel={presence.you} />
+        <PixelCrowd onlineLabel={presence.online} youLabel={presence.you} visitsLabel={presence.visits} visitsShortLabel={presence.visitsShort} />
         {children}
       </body>
     </html>

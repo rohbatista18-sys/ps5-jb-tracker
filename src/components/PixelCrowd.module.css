@@ -53,3 +53,30 @@
     animation: none;
   }
 }
+
+/* Discreet all-time counter: small and dim, separated from the live count. */
+.visits {
+  padding-left: 8px;
+  margin-left: 2px;
+  border-left: 2px solid #3a2f55;
+  font-size: 8px;
+  color: #8f8ebd;
+}
+
+.hud > span {
+  white-space: nowrap;
+}
+
+.visitsShort {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .visitsLong {
+    display: none;
+  }
+
+  .visitsShort {
+    display: inline;
+  }
+}

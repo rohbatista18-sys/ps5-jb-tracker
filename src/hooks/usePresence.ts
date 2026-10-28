@@ -35,8 +35,27 @@ export function getVisitorId(): string {
   }
 }
 
-export function usePresence(): { online: number | null } {
+// Per-browser "already counted" flag for the total-visitors counter. Only the flag lives here;
+// the server keeps a single number and never learns or stores who was counted.
+const COUNTED_KEY = "ps5jb:counted";
+
+function isFirstVisit(): boolean {
+  try {
+    return localStorage.getItem(COUNTED_KEY) !== "1";
+  } catch {
+    return false;
+  }
+}
+
+function markCounted() {
+  try {
+    localStorage.setItem(COUNTED_KEY, "1");
+  } catch {}
+}
+
+export function usePresence(): { online: number | null; visits: number | null } {
   const [online, setOnline] = useState<number | null>(null);
+  const [visits, setVisits] = useState<number | null>(null);
 
   useEffect(() => {
     const id = getVisitorId();
@@ -62,19 +81,24 @@ export function usePresence(): { online: number | null } {
       controller?.abort();
       controller = new AbortController();
       lastBeat = Date.now();
+      const visit = isFirstVisit();
       let res: Response | undefined;
       try {
         res = await fetch(ENDPOINT, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ id }),
+          body: JSON.stringify(visit ? { id, visit: true } : { id }),
           cache: "no-store",
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`presence ${res.status}`);
+        if (visit) markCounted();
         const data = (await res.json()) as Partial<PresenceResponse>;
         if (typeof data.online === "number" && Number.isFinite(data.online)) {
           setOnline(Math.max(0, Math.floor(data.online)));
+        }
+        if (typeof data.visits === "number" && Number.isFinite(data.visits)) {
+          setVisits(Math.max(0, Math.floor(data.visits)));
         }
         failures = 0;
         schedule(HEARTBEAT_MS);
@@ -115,5 +139,5 @@ export function usePresence(): { online: number | null } {
     };
   }, []);
 
-  return { online };
+  return { online, visits };
 }

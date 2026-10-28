@@ -38,6 +38,7 @@
 }
 
 html {
+  background: var(--bg);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
@@ -67,10 +68,14 @@ body {
 }
 
 /* CRT scanlines + vignette; sits above everything but never intercepts input */
+/* Oversized so mobile toolbars collapsing and overscroll bounce never expose an uncovered strip. */
 body::after {
   content: "";
   position: fixed;
-  inset: 0;
+  top: -15lvh;
+  left: 0;
+  right: 0;
+  height: 130lvh;
   z-index: 50;
   pointer-events: none;
   background:

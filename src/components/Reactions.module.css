@@ -1,0 +1,120 @@
+.reactions {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--line);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  color: var(--magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.total {
+  font-size: 1rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  list-style: none;
+}
+
+.button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 4px;
+  background: var(--bg-deep);
+  box-shadow: 0 0 0 2px var(--line);
+  transition: box-shadow 120ms ease-out, transform 120ms ease-out;
+}
+
+.button:hover {
+  box-shadow: 0 0 0 2px var(--magenta), 0 0 10px rgb(255 62 165 / 0.35);
+}
+
+.button:active {
+  transform: translateY(2px) scale(0.96);
+}
+
+.emoji {
+  font-size: 1.125rem;
+  line-height: 1;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+.count {
+  min-width: 2ch;
+  font-size: 1rem;
+  color: var(--ink-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.warning {
+  font-size: 1rem;
+  color: var(--yellow);
+}
+
+.bursts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.burst {
+  position: absolute;
+  top: 40px;
+  font-size: 1.5rem;
+  translate: -50% 0;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  animation: float-up 900ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes float-up {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(0.6);
+  }
+  25% {
+    transform: translateY(-16px) scale(1.15);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-56px) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .burst {
+    animation: fade 600ms linear forwards;
+  }
+
+  .button:active {
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  to {
+    opacity: 0;
+  }
+}
