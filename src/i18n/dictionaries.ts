@@ -51,7 +51,7 @@ const en = {
     total: "{n} sent",
     send: "Send",
     slowDown: "Easy there! Try again in a minute.",
-    names: { heart: "Love", clap: "Applause", rocket: "Let's go", fire: "On fire", muscle: "Strength", pray: "Thank you", party: "Celebrate", trophy: "Champion", brazil: "Brazilian girl" },
+    names: { heart: "Love", clap: "Applause", rocket: "Let's go", fire: "On fire", muscle: "Strength", pray: "Thank you", party: "Celebrate", trophy: "Champion", brazil: "Brazilian girls" },
   },
   overall: { title: "Overall summary", generatedAt: "Generated", loading: "Loading" },
   donate: {
@@ -133,7 +133,7 @@ const es: Dictionary = {
     total: "{n} enviados",
     send: "Enviar",
     slowDown: "¡Con calma! Intenta de nuevo en un minuto.",
-    names: { heart: "Amor", clap: "Aplausos", rocket: "¡Vamos!", fire: "En llamas", muscle: "Fuerza", pray: "Gracias", party: "Celebrar", trophy: "Campeón", brazil: "Chica brasileña" },
+    names: { heart: "Amor", clap: "Aplausos", rocket: "¡Vamos!", fire: "En llamas", muscle: "Fuerza", pray: "Gracias", party: "Celebrar", trophy: "Campeón", brazil: "Chicas brasileñas" },
   },
   overall: { title: "Resumen general", generatedAt: "Generado", loading: "Cargando" },
   donate: {
@@ -213,7 +213,7 @@ const pt: Dictionary = {
     total: "{n} enviados",
     send: "Enviar",
     slowDown: "Calma! Tente de novo em um minuto.",
-    names: { heart: "Amor", clap: "Aplausos", rocket: "Bora!", fire: "Pegando fogo", muscle: "Força", pray: "Obrigado", party: "Comemorar", trophy: "Campeão", brazil: "Menininha brasileira" },
+    names: { heart: "Amor", clap: "Aplausos", rocket: "Bora!", fire: "Pegando fogo", muscle: "Força", pray: "Obrigado", party: "Comemorar", trophy: "Campeão", brazil: "Garotas Brazileiras" },
   },
   overall: { title: "Resumo geral", generatedAt: "Gerado em", loading: "Carregando" },
   donate: {

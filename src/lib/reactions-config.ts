@@ -16,7 +16,7 @@ export const REACTIONS = [
   { key: "pray", emoji: "🙏" },
   { key: "party", emoji: "🎉" },
   { key: "trophy", emoji: "🏆" },
-  { key: "brazil", emoji: "🇧🇷", only: "pasta", shout: "Menininha brasileiraaaa" },
+  { key: "brazil", emoji: "🇧🇷", only: "pasta", shout: "Garotas Brazileiras <3" },
 ] as const satisfies readonly ReactionDef[];
 
 export type Reaction = (typeof REACTIONS)[number];
