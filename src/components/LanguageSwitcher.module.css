@@ -1,0 +1,24 @@
+.switcher {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.option {
+  --pb: var(--line);
+  --btn-bg: var(--panel);
+  min-width: 48px;
+  padding: 8px 10px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  text-decoration: none;
+  text-align: center;
+}
+
+.option[aria-current="true"] {
+  --pb: var(--ps-blue-hi);
+  --btn-bg: var(--ps-blue);
+  color: #fff;
+}

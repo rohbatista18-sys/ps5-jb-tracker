@@ -1,0 +1,79 @@
+.donate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgb(255 62 165 / 0.07);
+  border-left: var(--px) solid var(--magenta);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  color: var(--magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.heading::before {
+  content: "♥ ";
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 14px;
+  min-width: 0;
+}
+
+.item {
+  display: flex;
+  min-width: 0;
+}
+
+.link[data-kind="ko-fi"] {
+  --pb: var(--cyan);
+}
+
+.link[data-kind="paypal"] {
+  --pb: var(--ps-blue-hi);
+}
+
+.link[data-kind="x"] {
+  --pb: var(--ink-dim);
+}
+
+.crypto {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cryptoLabel {
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  color: var(--yellow);
+}
+
+.address {
+  font-family: var(--font-text);
+  font-size: 1.125rem;
+  color: var(--ink);
+  background: var(--bg-deep);
+  padding: 0 6px;
+  overflow-wrap: anywhere;
+}
+
+.copy {
+  --pb: var(--yellow);
+  min-width: 11ch;
+  justify-content: center;
+}
+
+.note {
+  font-size: 1.0625rem;
+  color: var(--ink-dim);
+}

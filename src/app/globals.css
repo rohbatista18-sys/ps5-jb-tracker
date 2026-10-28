@@ -1,0 +1,202 @@
+:root {
+  color-scheme: dark;
+
+  --bg: #0b0b14;
+  --bg-deep: #06060c;
+  --panel: rgb(16 16 34 / 0.92);
+  --panel-solid: #101022;
+  --panel-raised: #181833;
+  --line: #2a2a52;
+
+  --ink: #ecebff;
+  --ink-dim: #a9a8cf;
+  --ink-faint: #8f8ebd;
+
+  --ps-blue: #0070d1;
+  --ps-blue-hi: #5aa9ff;
+  --cyan: #2de2e6;
+  --magenta: #ff3ea5;
+  --yellow: #ffd23f;
+  --green: #3df58a;
+  --red: #ff5a6e;
+
+  --px: 4px;
+  --gutter: 16px;
+  --stage-h: 132px; /* top strip where the visitor sprites walk */
+  --radius: 0;
+
+  --font-display: var(--font-pixel), "Courier New", monospace;
+  --font-text: var(--font-body), ui-monospace, "Courier New", monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (max-width: 639px) {
+  :root {
+    --stage-h: 104px;
+  }
+}
+
+body {
+  padding-top: calc(var(--stage-h) + 4px);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgb(0 112 209 / 0.22), transparent 60%),
+    radial-gradient(ellipse at 100% 110%, rgb(255 62 165 / 0.12), transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: 1.25rem;
+  line-height: 1.35;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+}
+
+/* CRT scanlines + vignette; sits above everything but never intercepts input */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0) 0,
+      rgb(0 0 0 / 0) 2px,
+      rgb(0 0 0 / 0.22) 3px,
+      rgb(0 0 0 / 0) 4px
+    ),
+    radial-gradient(ellipse at center, transparent 62%, rgb(0 0 0 / 0.45) 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::after {
+    animation: crt-flicker 6s steps(1) infinite;
+  }
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  48% { opacity: 0.92; }
+  50% { opacity: 1; }
+  91% { opacity: 0.95; }
+}
+
+a {
+  color: var(--ps-blue-hi);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--cyan);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+::selection {
+  background: var(--magenta);
+  color: var(--bg-deep);
+}
+
+:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 3px;
+}
+
+/* Stepped pixel border: set --pb (color) on the element */
+.px-box {
+  background: var(--panel);
+  box-shadow:
+    0 calc(var(--px) * -1) 0 0 var(--pb, var(--line)),
+    0 var(--px) 0 0 var(--pb, var(--line)),
+    calc(var(--px) * -1) 0 0 0 var(--pb, var(--line)),
+    var(--px) 0 0 0 var(--pb, var(--line)),
+    var(--px) calc(var(--px) * 2) 0 0 rgb(0 0 0 / 0.55),
+    calc(var(--px) * 2) var(--px) 0 0 rgb(0 0 0 / 0.55);
+}
+
+/* Chunky pixel button */
+.px-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 32px;
+  padding: 6px 12px;
+  background: var(--btn-bg, var(--panel-raised));
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow:
+    0 -3px 0 0 var(--pb, var(--ps-blue)),
+    0 3px 0 0 var(--pb, var(--ps-blue)),
+    -3px 0 0 0 var(--pb, var(--ps-blue)),
+    3px 0 0 0 var(--pb, var(--ps-blue)),
+    inset -3px -3px 0 0 rgb(0 0 0 / 0.35),
+    inset 3px 3px 0 0 rgb(255 255 255 / 0.08);
+  transition: transform 80ms steps(2), background-color 80ms steps(2);
+}
+
+.px-btn:hover {
+  --btn-bg: var(--pb, var(--ps-blue));
+  color: var(--bg-deep);
+}
+
+.px-btn:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 -3px 0 0 var(--pb, var(--ps-blue)),
+    0 3px 0 0 var(--pb, var(--ps-blue)),
+    -3px 0 0 0 var(--pb, var(--ps-blue)),
+    3px 0 0 0 var(--pb, var(--ps-blue)),
+    inset 3px 3px 0 0 rgb(0 0 0 / 0.35);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

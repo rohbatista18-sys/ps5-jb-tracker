@@ -1,0 +1,55 @@
+.canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+  height: var(--stage-h);
+  border-bottom: 4px solid var(--line, #2a2a52);
+  background: linear-gradient(to top, rgb(0 112 209 / 0.16), transparent 70%);
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+.hud {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font-family: var(--font-pixel), ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: #e8e6f0;
+  background: rgba(11, 11, 20, 0.88);
+  border: 2px solid #3a2f55;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.dot {
+  color: #5ee6c5;
+  animation: blink 1.6s steps(2, jump-none) infinite;
+}
+
+.extra {
+  color: #ffd166;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    animation: none;
+  }
+}
