@@ -16,6 +16,7 @@ const CACHE_MS = 60_000;
 let cache: AllReactions | null = null;
 let cachedAt = 0;
 let loading: Promise<AllReactions> | null = null;
+let migrationChecked = false;
 
 export const isRepoId = (v: unknown): v is RepoId => REPOS.some((r) => r.id === v);
 
@@ -28,11 +29,38 @@ function parse(raw: Record<string, unknown> | null): AllReactions {
   return all;
 }
 
+// One-time move from the old per-dev hashes (reactions:v1:<id>) into the single hash, done by
+// whichever instance first finds the new hash empty. HSETNX keeps clicks that already landed.
+async function migrateV1(redis: NonNullable<ReturnType<typeof getRedis>>) {
+  const p = redis.pipeline();
+  for (const r of REPOS) p.hgetall(`reactions:v1:${r.id}`);
+  const rows = await p.exec<(Record<string, unknown> | null)[]>();
+  const w = redis.pipeline();
+  let fields = 0;
+  REPOS.forEach((r, i) => {
+    for (const [k, v] of Object.entries(rows[i] ?? {})) {
+      if (Number(v) > 0) {
+        w.hsetnx(KEY, `${r.id}:${k}`, Number(v));
+        fields++;
+      }
+    }
+  });
+  if (!fields) return;
+  for (const r of REPOS) w.del(`reactions:v1:${r.id}`);
+  await w.exec();
+}
+
 async function load(): Promise<AllReactions> {
   const redis = getRedis();
   if (!redis) return (cache ??= empty());
   try {
-    cache = parse(await redis.hgetall(KEY));
+    let raw = await redis.hgetall(KEY);
+    if ((!raw || !Object.keys(raw).length) && !migrationChecked) {
+      migrationChecked = true;
+      await migrateV1(redis);
+      raw = await redis.hgetall(KEY);
+    }
+    cache = parse(raw);
   } catch (err) {
     console.error("[reactions] redis error", err instanceof Error ? err.message : err);
     cache ??= empty();
