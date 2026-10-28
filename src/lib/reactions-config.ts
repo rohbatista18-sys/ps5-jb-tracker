@@ -23,6 +23,16 @@ export type Reaction = (typeof REACTIONS)[number];
 export type ReactionKey = Reaction["key"];
 export type ReactionCounts = Record<ReactionKey, number>;
 
+/** Each person (IP) can send this many salves per clock hour, across all devs. */
+export const REACTION_QUOTA = 3;
+
+/**
+ * Estimated totals from before the counters moved to Supabase (the real ones are locked in the
+ * over-quota Upstash database). Added on top of the stored counts for display only; replace with
+ * the real totals once Upstash can be read again.
+ */
+export const reactionBaseline = (key: ReactionKey) => (key === "brazil" ? 1000 : 500);
+
 /** Window event fired on a reaction click; PixelCrowd shows the emoji (and shout) above the visitor's own sprite. */
 export const EMOTE_EVENT = "ps5jb:emote";
 export interface EmoteDetail {

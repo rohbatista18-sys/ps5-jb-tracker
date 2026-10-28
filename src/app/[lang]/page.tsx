@@ -5,6 +5,7 @@ import RepoCard, { RepoCardSkeleton } from "@/components/RepoCard";
 import OverallSummary, { OverallSummarySkeleton } from "@/components/OverallSummary";
 import RelativeTime from "@/components/RelativeTime";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import PsButtons from "@/components/PsButtons";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
@@ -52,12 +53,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
     <div className={styles.page}>
       <header className={styles.header}>
         <LanguageSwitcher current={lang} label={dict.header.language} />
-        <p className={styles.buttons} aria-hidden="true">
-          <span data-b="triangle">△</span>
-          <span data-b="circle">○</span>
-          <span data-b="cross">✕</span>
-          <span data-b="square">□</span>
-        </p>
+        <PsButtons className={styles.buttons} />
         <h1 className={styles.title}>
           <span className={styles.titleTop}>PS5 14.10</span>
           <span className={styles.titleBottom}>Jailbreak Tracker</span>

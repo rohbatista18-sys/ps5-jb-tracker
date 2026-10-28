@@ -2,7 +2,7 @@ import "server-only";
 import { getRedis } from "./redis";
 import { REPOS } from "./repos";
 import { countersWithPrefix, hasSupabase, rpc } from "./supabase";
-import { REACTIONS, emptyCounts, type ReactionCounts, type ReactionKey } from "./reactions-config";
+import { REACTIONS, emptyCounts, reactionBaseline, type ReactionCounts, type ReactionKey } from "./reactions-config";
 import type { RepoConfig } from "./types";
 
 type RepoId = RepoConfig["id"];
@@ -25,6 +25,10 @@ let loading: Promise<AllReactions> | null = null;
 let migrationChecked = false;
 
 export const isRepoId = (v: unknown): v is RepoId => REPOS.some((r) => r.id === v);
+
+/** Stored counts plus the pre-migration estimate, for display. Never written back to the store. */
+export const withBaseline = (counts: ReactionCounts): ReactionCounts =>
+  Object.fromEntries(REACTIONS.map(({ key }) => [key, counts[key] + reactionBaseline(key)])) as ReactionCounts;
 
 const empty = () => Object.fromEntries(REPOS.map((r) => [r.id, emptyCounts()])) as AllReactions;
 

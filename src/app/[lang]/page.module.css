@@ -22,11 +22,8 @@
 
 .buttons {
   display: flex;
+  align-items: center;
   gap: 14px;
-  font-family: system-ui, sans-serif;
-  font-size: 1.125rem;
-  font-weight: 700;
-  line-height: 1;
 }
 
 .buttons [data-b="triangle"] { color: #40e0b0; }
