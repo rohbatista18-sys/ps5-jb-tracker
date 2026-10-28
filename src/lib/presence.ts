@@ -1,5 +1,6 @@
 import { env } from "./env";
 import { getRedis } from "./redis";
+import { hasSupabase, rpc } from "./supabase";
 import type { PresenceResponse } from "./types";
 
 const KEY = "presence:v1";
@@ -11,6 +12,10 @@ export const PRESENCE_TTL_MS = 120_000; // covers a 30 s heartbeat plus another 
 // single pipeline (one ZADD carrying every pending tab id), instead of several commands per
 // heartbeat. This keeps the command count independent of how many tabs are open.
 const FLUSH_MS = 60_000;
+// Supabase has no per-command quota, so flush more often for a fresher count (still one call).
+const SUPABASE_FLUSH_MS = 15_000;
+const flushInterval = () => (hasSupabase() ? SUPABASE_FLUSH_MS : FLUSH_MS);
+const hasStore = () => hasSupabase() || Boolean(getRedis());
 const PRUNE_EVERY_MS = 10 * 60_000;
 const MAX_MEMORY_ENTRIES = 10_000;
 
@@ -33,17 +38,33 @@ function pruneMemory(now: number): number {
   return memory.size;
 }
 
+async function flushSupabase(beats: [string, number][], gone: string[], views: number) {
+  const [row] = await rpc<{ online: number; pageviews: number }[]>("presence_flush", {
+    beats: Object.fromEntries(beats),
+    gone,
+    ttl_seconds: PRESENCE_TTL_MS / 1000,
+    views,
+  });
+  return { online: Number(row?.online) || 0, views: Number(row?.pageviews) || 0 };
+}
+
 async function flush(now: number) {
   const redis = getRedis();
-  if (!redis) return;
-  const members = [...pending].map(([member, score]) => ({ member, score }));
+  if (!hasSupabase() && !redis) return;
+  const beats = [...pending];
+  const members = beats.map(([member, score]) => ({ member, score }));
   const gone = [...removed];
   const views = pendingViews;
   pending.clear();
   removed.clear();
   pendingViews = 0;
   try {
-    const p = redis.pipeline();
+    if (hasSupabase()) {
+      shared = await flushSupabase(beats, gone, views);
+      lastFlush = now;
+      return;
+    }
+    const p = redis!.pipeline();
     if (members.length) p.zadd(KEY, members[0], ...members.slice(1));
     if (gone.length) p.zrem(KEY, ...gone);
     if (now - lastPrune > PRUNE_EVERY_MS) {
@@ -57,8 +78,10 @@ async function flush(now: number) {
     shared = { online: Number(results[results.length - 2]) || 0, views: Number(results[results.length - 1]) || 0 };
     lastFlush = now;
   } catch (err) {
-    console.error("[presence] redis error", err instanceof Error ? err.message : err);
+    console.error("[presence] store error", err instanceof Error ? err.message : err);
     pendingViews += views; // keep them for the next flush instead of losing them
+    for (const [id, seen] of beats) if (!pending.has(id) && pending.size < MAX_MEMORY_ENTRIES) pending.set(id, seen);
+    for (const id of gone) removed.add(id);
     lastFlush = now; // back off a full interval instead of hammering a failing/over-quota Redis
   }
 }
@@ -66,7 +89,7 @@ async function flush(now: number) {
 async function snapshot(): Promise<PresenceResponse> {
   const now = Date.now();
   const local = { online: pruneMemory(now), views: memoryViews };
-  if (getRedis() && (now - lastFlush >= FLUSH_MS || !shared)) {
+  if (hasStore() && (now - lastFlush >= flushInterval() || !shared)) {
     flushing ??= flush(now).finally(() => (flushing = null));
     await flushing;
   }

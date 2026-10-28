@@ -1,6 +1,7 @@
 import "server-only";
 import { getRedis } from "./redis";
 import { REPOS } from "./repos";
+import { countersWithPrefix, hasSupabase, rpc } from "./supabase";
 import { REACTIONS, emptyCounts, type ReactionCounts, type ReactionKey } from "./reactions-config";
 import type { RepoConfig } from "./types";
 
@@ -10,8 +11,13 @@ export type AllReactions = Record<RepoId, ReactionCounts>;
 // One Redis hash for every dev (field = "<repo>:<reaction>"), read at most once per CACHE_MS per
 // server instance, so polling visitors cost no Redis commands. Only aggregate counts are kept —
 // nothing about who reacted. Without Redis, counts live per instance and reset on cold start.
+// With Supabase configured it is the store instead (counters table, key "reactions:<repo>:<reaction>"),
+// read at most once per SUPABASE_CACHE_MS since it has no per-command quota.
 const KEY = "reactions:v2";
+const SB_PREFIX = "reactions:";
 const CACHE_MS = 60_000;
+const SUPABASE_CACHE_MS = 15_000;
+const cacheMs = () => (hasSupabase() ? SUPABASE_CACHE_MS : CACHE_MS);
 
 let cache: AllReactions | null = null;
 let cachedAt = 0;
@@ -61,6 +67,10 @@ async function flushPending(redis: NonNullable<ReturnType<typeof getRedis>>) {
   const p = redis.pipeline();
   for (const [field, n] of sent) p.hincrby(KEY, field, n);
   await p.exec();
+  settle(sent);
+}
+
+function settle(sent: [string, number][]) {
   for (const [field, n] of sent) {
     const left = (pendingDeltas.get(field) ?? 0) - n;
     if (left > 0) pendingDeltas.set(field, left);
@@ -68,7 +78,34 @@ async function flushPending(redis: NonNullable<ReturnType<typeof getRedis>>) {
   }
 }
 
+async function incrSupabase(deltas: [string, number][]) {
+  const rows = await rpc<{ key: string; value: number }[]>("incr_counters", {
+    deltas: Object.fromEntries(deltas.map(([field, n]) => [SB_PREFIX + field, n])),
+  });
+  return Object.fromEntries(rows.map((r) => [r.key.slice(SB_PREFIX.length), Number(r.value) || 0]));
+}
+
+async function loadSupabase(): Promise<AllReactions> {
+  if (pendingDeltas.size) {
+    const sent = [...pendingDeltas];
+    await incrSupabase(sent);
+    settle(sent);
+  }
+  const rows = await countersWithPrefix(SB_PREFIX);
+  return parse(Object.fromEntries(Object.entries(rows).map(([k, v]) => [k.slice(SB_PREFIX.length), v])));
+}
+
 async function load(): Promise<AllReactions> {
+  if (hasSupabase()) {
+    try {
+      cache = await loadSupabase();
+    } catch (err) {
+      console.error("[reactions] supabase error", err instanceof Error ? err.message : err);
+      cache ??= empty();
+    }
+    cachedAt = Date.now();
+    return cache;
+  }
   const redis = getRedis();
   if (!redis) return (cache ??= empty());
   try {
@@ -92,13 +129,26 @@ async function load(): Promise<AllReactions> {
 }
 
 export async function getAllReactions(): Promise<AllReactions> {
-  if (cache && Date.now() - cachedAt < CACHE_MS) return cache;
+  if (cache && Date.now() - cachedAt < cacheMs()) return cache;
   loading ??= load().finally(() => (loading = null));
   return loading;
 }
 
 export async function addReaction(id: RepoId, reaction: ReactionKey): Promise<ReactionCounts> {
   const all = await getAllReactions();
+  const field = `${id}:${reaction}`;
+  if (hasSupabase()) {
+    try {
+      const values = await incrSupabase([[field, 1]]);
+      all[id][reaction] = Math.max(all[id][reaction] + 1, values[field] ?? 0);
+      return all[id];
+    } catch (err) {
+      console.error("[reactions] supabase error", err instanceof Error ? err.message : err);
+      pendingDeltas.set(field, (pendingDeltas.get(field) ?? 0) + 1);
+      all[id][reaction]++;
+      return all[id];
+    }
+  }
   const redis = getRedis();
   if (redis) {
     try {
@@ -107,7 +157,6 @@ export async function addReaction(id: RepoId, reaction: ReactionKey): Promise<Re
       return all[id];
     } catch (err) {
       console.error("[reactions] redis error", err instanceof Error ? err.message : err);
-      const field = `${id}:${reaction}`;
       pendingDeltas.set(field, (pendingDeltas.get(field) ?? 0) + 1);
     }
   }

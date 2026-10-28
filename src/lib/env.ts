@@ -35,6 +35,12 @@ export const env = {
   get redisToken() {
     return first("UPSTASH_REDIS_REST_TOKEN", "KV_REST_API_TOKEN");
   },
+  get supabaseUrl() {
+    return read("SUPABASE_URL");
+  },
+  get supabaseSecretKey() {
+    return read("SUPABASE_SECRET_KEY");
+  },
   get cronSecret() {
     return read("CRON_SECRET");
   },
