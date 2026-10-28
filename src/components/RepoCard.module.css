@@ -4,7 +4,7 @@
   position: relative;
   /* Rows are shared with the sibling cards so header/summary/updated/commits line up across the grid. */
   display: grid;
-  grid-row: span 4;
+  grid-row: span 5;
   grid-template-rows: subgrid;
   grid-template-columns: minmax(0, 1fr);
   row-gap: 16px;

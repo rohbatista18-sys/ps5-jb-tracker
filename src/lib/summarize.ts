@@ -2,9 +2,19 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { generateText } from "./azure-openai";
 import { getRedis } from "./redis";
-import { LOCALES, type Locale, type Localized, type RepoSnapshot, type RepoSummary, type RepoView } from "./types";
+import {
+  LOCALES,
+  STAGES,
+  type Locale,
+  type Localized,
+  type RepoSnapshot,
+  type RepoSummary,
+  type RepoView,
+  type Stage,
+  type StageState,
+} from "./types";
 
-export const PROMPT_VERSION = "v3"; // bump to invalidate stored summaries
+export const PROMPT_VERSION = "v4"; // bump to invalidate stored summaries
 
 const README_MAX = 12_000;
 const DESCRIPTION_MAX = 500;
@@ -13,6 +23,7 @@ const OUTPUT_MAX = 600;
 const DELIM = "<<<UNTRUSTED_DATA>>>";
 const DELIM_END = "<<<END_UNTRUSTED_DATA>>>";
 const STATUSES: readonly RepoSummary["status"][] = ["early", "progressing", "breakthrough", "stalled", "unknown"];
+const STAGE_STATES: readonly StageState[] = ["done", "partial", "none"];
 
 type Overall = { text: Localized; generatedAt: string; fallback?: boolean };
 
@@ -37,10 +48,17 @@ FIDELITY:
 - Do not invent dates, versions or results.
 
 OUTPUT:
-- Reply ONLY with valid JSON, no markdown: {"status": "...", "text": {"en": "...", "es": "...", "pt": "..."}}
+- Reply ONLY with valid JSON, no markdown: {"status": "...", "stages": {...}, "text": {"en": "...", "es": "...", "pt": "..."}}
 ${LANG_RULES}
 - Each language: 2 to 4 short sentences, plain text, at most 500 characters.
-- "status": one of "early" (initial research), "progressing" (concrete partial advances), "breakthrough" (the repo declares a demonstrated chain), "stalled" (no relevant activity for a long time or abandoned), "unknown" (not enough information).`;
+- "status": one of "early" (initial research), "progressing" (concrete partial advances), "breakthrough" (the repo declares a demonstrated chain), "stalled" (no relevant activity for a long time or abandoned), "unknown" (not enough information).
+- "stages": classify each stage of a jailbreak chain ON FIRMWARE 14.10 as "done" (the repo explicitly says it was demonstrated on 14.10), "partial" (the repo reports concrete partial results or active, evidenced work on it) or "none" (not reported, only planned, or only on other firmwares). Be conservative: claims without evidence are "none"; previously known techniques that the repo says are patched/dead on 14.10 are "none". Keys:
+  "entry" (code execution in a userland process, e.g. browser/WebKit, Lua, save game),
+  "userlandRw" (arbitrary userland memory read/write primitives),
+  "kaslr" (kernel address leak / KASLR bypass),
+  "kernelRw" (kernel memory read/write),
+  "privesc" (privilege escalation / sandbox escape, i.e. jailbreak),
+  "release" (complete chain publicly released and reproducible).`;
 
 const OVERALL_INSTRUCTIONS = `You write a short overview of the race for a PS5 firmware 14.10 jailbreak, based on summaries of several research repositories.
 
@@ -201,8 +219,17 @@ function buildRepoPrompt(r: RepoInput): string {
     "README:",
     wrap(r.readme ?? "(no README)"),
     "",
-    'Reply only with the JSON {"status": "...", "text": {"en": "...", "es": "...", "pt": "..."}}.',
+    'Reply only with the JSON {"status": "...", "stages": {...}, "text": {"en": "...", "es": "...", "pt": "..."}}.',
   ].join("\n");
+}
+
+// Unknown or missing values count as "none", so a malformed answer can only under-report progress.
+function parseStages(value: unknown): Record<Stage, StageState> | undefined {
+  if (typeof value !== "object" || value === null) return undefined;
+  const raw = value as Record<string, unknown>;
+  return Object.fromEntries(
+    STAGES.map(({ id }) => [id, STAGE_STATES.find((s) => s === raw[id]) ?? "none"]),
+  ) as Record<Stage, StageState>;
 }
 
 function repoFallback(r: RepoInput): RepoSummary {
@@ -226,7 +253,7 @@ async function generateRepoSummary(r: RepoInput): Promise<RepoSummary> {
     const text = parseLocalized(obj?.text);
     if (!text) throw new Error("invalid JSON from model");
     const status = STATUSES.find((s) => s === obj?.status) ?? "unknown";
-    return { text, status, generatedAt: new Date().toISOString(), sourceSha: r.sha };
+    return { text, stages: parseStages(obj?.stages), status, generatedAt: new Date().toISOString(), sourceSha: r.sha };
   } catch (err) {
     console.error(`[summarize] repo ${r.id} failed:`, err instanceof Error ? err.message : err);
     return repoFallback(r);

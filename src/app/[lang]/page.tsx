@@ -9,6 +9,8 @@ import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
 
+const SITE_SOURCE_URL = "https://github.com/rohbatista18-sys/ps5-jb-tracker";
+
 async function LastChecked({ locale }: { locale: Locale }) {
   const { fetchedAt } = await getDashboard();
   return <RelativeTime iso={fetchedAt} locale={locale} className={styles.checkedTime} />;
@@ -82,7 +84,12 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <p>{dict.footer.privacy}</p>
         </div>
         <p>{dict.footer.disclaimer}</p>
-        <p className={styles.footerMeta}>{dict.footer.meta}</p>
+        <p className={styles.footerMeta}>
+          {dict.footer.meta} ·{" "}
+          <a href={SITE_SOURCE_URL} target="_blank" rel="noopener noreferrer">
+            {dict.footer.source}
+          </a>
+        </p>
       </footer>
     </div>
   );

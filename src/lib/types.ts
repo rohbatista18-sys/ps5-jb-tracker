@@ -39,8 +39,21 @@ export const LOCALES = ["en", "es", "pt"] as const;
 export type Locale = (typeof LOCALES)[number];
 export type Localized = Record<Locale, string>;
 
+// Stages of a full jailbreak chain; weights sum to 100 and drive the progress bar.
+export const STAGES = [
+  { id: "entry", weight: 15 },
+  { id: "userlandRw", weight: 15 },
+  { id: "kaslr", weight: 15 },
+  { id: "kernelRw", weight: 25 },
+  { id: "privesc", weight: 20 },
+  { id: "release", weight: 10 },
+] as const;
+export type Stage = (typeof STAGES)[number]["id"];
+export type StageState = "done" | "partial" | "none";
+
 export interface RepoSummary {
   text: Localized; // 2–4 sentences per locale, plain text
+  stages?: Record<Stage, StageState>; // absent when the AI was unavailable
   status: "early" | "progressing" | "breakthrough" | "stalled" | "unknown";
   generatedAt: string; // ISO
   sourceSha: string | null;

@@ -2,6 +2,7 @@ import type { RepoView } from "@/lib/types";
 import { INTL_TAG, type Locale } from "@/i18n/config";
 import { fill, type Dictionary } from "@/i18n/dictionaries";
 import DonateLinks from "./DonateLinks";
+import ProgressBar from "./ProgressBar";
 import RelativeTime from "./RelativeTime";
 import styles from "./RepoCard.module.css";
 
@@ -72,7 +73,9 @@ export default function RepoCard({ repo, locale, dict }: Props) {
         />
       </header>
 
-      {/* Card children map 1:1 to the shared subgrid rows: header, summary, updated, commits. */}
+      {/* Card children map 1:1 to the shared subgrid rows: header, progress, summary, updated, commits. */}
+      <ProgressBar stages={summary.stages} dict={dict.progress} />
+
       <section className={styles.summary} aria-label={t.summary}>
         {repo.error && (
           <p className={styles.error} role="status">

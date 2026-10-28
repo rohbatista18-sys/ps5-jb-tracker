@@ -31,6 +31,21 @@ const en = {
     recentCommits: "Recent commits",
     xProfile: "{name} on X",
   },
+  progress: {
+    title: "Estimated progress",
+    unknown: "Not enough data to estimate progress yet.",
+    details: "Chain stages",
+    note: "Estimated by AI from what the repository itself reports — not an official percentage.",
+    states: { done: "Demonstrated", partial: "Partial", none: "Not yet" },
+    stages: {
+      entry: "Entry point (userland code execution)",
+      userlandRw: "Userland read/write",
+      kaslr: "Kernel leak / KASLR bypass",
+      kernelRw: "Kernel read/write",
+      privesc: "Privilege escalation (jailbreak)",
+      release: "Full chain released",
+    },
+  },
   overall: { title: "Overall summary", generatedAt: "Generated", loading: "Loading" },
   donate: {
     support: "Support",
@@ -49,6 +64,7 @@ const en = {
     disclaimer:
       "Unofficial aggregator. We do not host exploits. AI-generated summaries may contain errors — check the repository.",
     meta: "Data: GitHub API · refreshed every ~10 min",
+    source: "This site's source code on GitHub",
     donations:
       "Donations have no affiliation with Forever-Necessary: every donation link goes straight to the developer's own page, and this site receives nothing.",
     nonprofit: "This is a non-profit site.",
@@ -90,6 +106,21 @@ const es: Dictionary = {
     recentCommits: "Commits recientes",
     xProfile: "{name} en X",
   },
+  progress: {
+    title: "Progreso estimado",
+    unknown: "Aún no hay datos suficientes para estimar el progreso.",
+    details: "Etapas de la cadena",
+    note: "Estimado por IA a partir de lo que el propio repositorio informa — no es un porcentaje oficial.",
+    states: { done: "Demostrado", partial: "Parcial", none: "Aún no" },
+    stages: {
+      entry: "Punto de entrada (ejecución en userland)",
+      userlandRw: "Lectura/escritura en userland",
+      kaslr: "Fuga del kernel / bypass de KASLR",
+      kernelRw: "Lectura/escritura en el kernel",
+      privesc: "Escalada de privilegios (jailbreak)",
+      release: "Cadena completa publicada",
+    },
+  },
   overall: { title: "Resumen general", generatedAt: "Generado", loading: "Cargando" },
   donate: {
     support: "Apoya",
@@ -108,6 +139,7 @@ const es: Dictionary = {
     disclaimer:
       "Agregador no oficial. No alojamos exploits. Los resúmenes generados por IA pueden contener errores — revisa el repositorio.",
     meta: "Datos: API de GitHub · actualizado cada ~10 min",
+    source: "Código fuente de este sitio en GitHub",
     donations:
       "Las donaciones no tienen ninguna afiliación con Forever-Necessary: cada enlace de donación lleva directamente a la página del propio desarrollador y este sitio no recibe nada.",
     nonprofit: "Este sitio no tiene fines de lucro.",
@@ -147,6 +179,21 @@ const pt: Dictionary = {
     recentCommits: "Commits recentes",
     xProfile: "{name} no X",
   },
+  progress: {
+    title: "Progresso estimado",
+    unknown: "Ainda não há dados suficientes para estimar o progresso.",
+    details: "Etapas da cadeia",
+    note: "Estimado por IA a partir do que o próprio repositório relata — não é uma porcentagem oficial.",
+    states: { done: "Demonstrado", partial: "Parcial", none: "Ainda não" },
+    stages: {
+      entry: "Ponto de entrada (execução no userland)",
+      userlandRw: "Leitura/escrita no userland",
+      kaslr: "Vazamento do kernel / bypass do KASLR",
+      kernelRw: "Leitura/escrita no kernel",
+      privesc: "Escalada de privilégios (jailbreak)",
+      release: "Cadeia completa publicada",
+    },
+  },
   overall: { title: "Resumo geral", generatedAt: "Gerado em", loading: "Carregando" },
   donate: {
     support: "Apoie",
@@ -165,6 +212,7 @@ const pt: Dictionary = {
     disclaimer:
       "Agregador não oficial. Não hospedamos exploits. Resumos gerados por IA podem conter erros — confira o repositório.",
     meta: "Dados: API do GitHub · atualizado a cada ~10 min",
+    source: "Código-fonte deste site no GitHub",
     donations:
       "As doações não têm nenhuma afiliação com o Forever-Necessary: cada link de doação leva direto para a página do próprio desenvolvedor, e este site não recebe nada.",
     nonprofit: "Este site não tem fins lucrativos.",
