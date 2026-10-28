@@ -250,6 +250,10 @@ function repoFallback(r: RepoInput): RepoSummary {
   };
 }
 
+// Last good AI summary per repo on this instance. When the AI fails, showing the previous real
+// summary beats the provisional text; it is cached only briefly so a fresh one replaces it soon.
+const lastGoodRepo = new Map<string, RepoSummary>();
+
 async function generateRepoSummary(r: RepoInput): Promise<RepoSummary> {
   try {
     const raw = await generateBudgeted({ instructions: REPO_INSTRUCTIONS, input: buildRepoPrompt(r), maxOutputTokens: 3000 });
@@ -257,15 +261,19 @@ async function generateRepoSummary(r: RepoInput): Promise<RepoSummary> {
     const text = parseLocalized(obj?.text);
     if (!text) throw new Error("invalid JSON from model");
     const status = STATUSES.find((s) => s === obj?.status) ?? "unknown";
-    return { text, stages: parseStages(obj?.stages), status, generatedAt: new Date().toISOString(), sourceSha: r.sha };
+    const summary = { text, stages: parseStages(obj?.stages), status, generatedAt: new Date().toISOString(), sourceSha: r.sha };
+    lastGoodRepo.set(r.id, summary);
+    return summary;
   } catch (err) {
     console.error(`[summarize] repo ${r.id} failed:`, err instanceof Error ? err.message : err);
-    return repoFallback(r);
+    return lastGoodRepo.get(r.id) ?? repoFallback(r);
   }
 }
 
+// "remote": one shared entry per commit SHA across every server instance and language page, so
+// /en, /es and /pt (and every instance) show the same AI result instead of each generating its own.
 async function cachedRepoSummary(key: string, r: RepoInput): Promise<RepoSummary> {
-  "use cache";
+  "use cache: remote";
   cacheTag("summary", `summary:${r.id}`);
   const stored = await redisGet<RepoSummary>(key);
   if (stored) {
@@ -274,7 +282,9 @@ async function cachedRepoSummary(key: string, r: RepoInput): Promise<RepoSummary
     return stored;
   }
   const summary = await generateRepoSummary(r);
-  if (summary.fallback) {
+  if (summary.sourceSha !== r.sha) {
+    cacheLife("minutes"); // reused previous summary: retry soon, never persist it under this SHA
+  } else if (summary.fallback) {
     cacheLife("minutes");
     await redisSet(key, summary, REDIS_FALLBACK_TTL_S);
   } else {
@@ -291,7 +301,7 @@ export async function summarizeRepo(snapshot: RepoSnapshot): Promise<RepoSummary
     return await cachedRepoSummary(`sum:${PROMPT_VERSION}:${input.id}:${input.sha}`, input);
   } catch (err) {
     console.error("[summarize] cache layer failed:", err instanceof Error ? err.message : err);
-    return repoFallback(input);
+    return lastGoodRepo.get(input.id) ?? repoFallback(input);
   }
 }
 
@@ -325,15 +335,17 @@ async function generateOverall(items: OverallItem[]): Promise<Overall> {
     const raw = await generateBudgeted({ instructions: OVERALL_INSTRUCTIONS, input, maxOutputTokens: 2500 });
     const text = parseLocalized(parseJson(raw)?.text);
     if (!text) throw new Error("invalid JSON from model");
-    return { text, generatedAt: new Date().toISOString() };
+    return (lastGoodOverall = { text, generatedAt: new Date().toISOString() });
   } catch (err) {
     console.error("[summarize] overall failed:", err instanceof Error ? err.message : err);
-    return overallFallback(items);
+    return lastGoodOverall ?? overallFallback(items);
   }
 }
 
+let lastGoodOverall: Overall | null = null;
+
 async function cachedOverall(key: string, items: OverallItem[]): Promise<Overall> {
-  "use cache";
+  "use cache: remote";
   cacheTag("summary", "summary:overall");
   const stored = await redisGet<Overall>(key);
   if (stored) {
@@ -341,8 +353,11 @@ async function cachedOverall(key: string, items: OverallItem[]): Promise<Overall
     else cacheLife("max");
     return stored;
   }
+  const previous = lastGoodOverall;
   const overall = await generateOverall(items);
-  if (overall.fallback) {
+  if (overall === previous) {
+    cacheLife("minutes"); // reused previous overview: retry soon, never persist it under these SHAs
+  } else if (overall.fallback) {
     cacheLife("minutes");
     await redisSet(key, overall, REDIS_FALLBACK_TTL_S);
   } else {
@@ -366,6 +381,6 @@ export async function summarizeOverall(views: RepoView[]): Promise<Overall> {
     return await cachedOverall(`sum:${PROMPT_VERSION}:overall:${shas}`, items);
   } catch (err) {
     console.error("[summarize] overall cache layer failed:", err instanceof Error ? err.message : err);
-    return overallFallback(items);
+    return lastGoodOverall ?? overallFallback(items);
   }
 }

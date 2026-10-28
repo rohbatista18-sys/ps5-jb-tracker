@@ -40,8 +40,9 @@ export function extractText(data: ResponsesPayload): string {
     .join("");
 }
 
-// Some deployments (e.g. chat-tuned models) reject `reasoning.effort: "low"`; detect once and stop sending it.
-let sendReasoning = true;
+// The current deployment (chat-tuned) rejects `reasoning.effort: "low"`, so it is off by default;
+// the detection below still turns it off again if it is ever re-enabled for a model that refuses it.
+let sendReasoning = false;
 
 function isReasoningRejection(status: number, err: ResponsesPayload["error"]): boolean {
   if (status !== 400 || !err) return false;

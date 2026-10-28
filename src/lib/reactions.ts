@@ -50,17 +50,39 @@ async function migrateV1(redis: NonNullable<ReturnType<typeof getRedis>>) {
   await w.exec();
 }
 
+// Clicks this instance could not store (Redis down or over quota), keyed "<repo>:<reaction>".
+// They are added on top of the stored totals with HINCRBY as soon as Redis answers again, so
+// counts from before and during an outage are summed instead of lost (unless the instance is
+// recycled first — that part lives only in memory).
+const pendingDeltas = new Map<string, number>();
+
+async function flushPending(redis: NonNullable<ReturnType<typeof getRedis>>) {
+  const sent = [...pendingDeltas];
+  const p = redis.pipeline();
+  for (const [field, n] of sent) p.hincrby(KEY, field, n);
+  await p.exec();
+  for (const [field, n] of sent) {
+    const left = (pendingDeltas.get(field) ?? 0) - n;
+    if (left > 0) pendingDeltas.set(field, left);
+    else pendingDeltas.delete(field);
+  }
+}
+
 async function load(): Promise<AllReactions> {
   const redis = getRedis();
   if (!redis) return (cache ??= empty());
   try {
-    let raw = await redis.hgetall(KEY);
+    let raw: Record<string, unknown> | null = await redis.hgetall(KEY);
     if ((!raw || !Object.keys(raw).length) && !migrationChecked) {
-      migrationChecked = true;
       await migrateV1(redis);
-      raw = await redis.hgetall(KEY);
+      migrationChecked = true;
+      raw = null;
     }
-    cache = parse(raw);
+    if (pendingDeltas.size) {
+      await flushPending(redis);
+      raw = null;
+    }
+    cache = parse(raw ?? (await redis.hgetall(KEY)));
   } catch (err) {
     console.error("[reactions] redis error", err instanceof Error ? err.message : err);
     cache ??= empty();
@@ -85,6 +107,8 @@ export async function addReaction(id: RepoId, reaction: ReactionKey): Promise<Re
       return all[id];
     } catch (err) {
       console.error("[reactions] redis error", err instanceof Error ? err.message : err);
+      const field = `${id}:${reaction}`;
+      pendingDeltas.set(field, (pendingDeltas.get(field) ?? 0) + 1);
     }
   }
   all[id][reaction]++;
