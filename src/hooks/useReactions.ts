@@ -6,7 +6,7 @@ import type { ReactionCounts, ReactionKey } from "@/lib/reactions-config";
 type AllCounts = Record<string, ReactionCounts>;
 
 const ENDPOINT = "/api/reactions";
-const POLL_MS = 30_000;
+const POLL_MS = 60_000;
 
 // One store for all cards: a single GET serves the three of them, polled only while visible.
 let state: AllCounts | null = null;

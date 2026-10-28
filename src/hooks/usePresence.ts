@@ -5,7 +5,7 @@ import type { PresenceResponse } from "@/lib/types";
 
 const ENDPOINT = "/api/presence";
 const STORAGE_KEY = "ps5jb:visitor-id";
-const HEARTBEAT_MS = 20_000;
+const HEARTBEAT_MS = 30_000; // server expires a tab after 120 s without one
 const MAX_BACKOFF_MS = 120_000;
 const MIN_GAP_MS = 5_000;
 

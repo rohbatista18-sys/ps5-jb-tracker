@@ -156,19 +156,23 @@ async function redisSet(key: string, value: unknown, ttl = REDIS_TTL_S): Promise
 const AI_DAILY_LIMIT = 60;
 const memoryBudget = { day: "", calls: 0 };
 
+function withinMemoryBudget(day: string): boolean {
+  if (memoryBudget.day !== day) Object.assign(memoryBudget, { day, calls: 0 });
+  return ++memoryBudget.calls <= AI_DAILY_LIMIT;
+}
+
 async function withinAiBudget(): Promise<boolean> {
   const day = new Date().toISOString().slice(0, 10);
   const redis = getRedis();
-  if (!redis) {
-    if (memoryBudget.day !== day) Object.assign(memoryBudget, { day, calls: 0 });
-    return ++memoryBudget.calls <= AI_DAILY_LIMIT;
-  }
+  if (!redis) return withinMemoryBudget(day);
   try {
     const key = `ai:calls:${day}`;
     const [calls] = await redis.multi().incr(key).expire(key, 60 * 60 * 48).exec<[number, number]>();
     return calls <= AI_DAILY_LIMIT;
   } catch {
-    return false; // fail closed: a Redis outage must not turn into unbounded AI spend
+    // Redis down or over quota: keep summaries working under the same cap, counted per instance,
+    // instead of shutting AI off for everyone. Spend stays bounded (instances × limit).
+    return withinMemoryBudget(day);
   }
 }
 
