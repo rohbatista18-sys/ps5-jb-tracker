@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { generateText } from "./azure-openai";
 import { getRedis } from "./redis";
+import { hasSupabase, kvGet, kvKeepFirst } from "./supabase";
 import {
   LOCALES,
   STAGES,
@@ -148,6 +149,35 @@ async function redisSet(key: string, value: unknown, ttl = REDIS_TTL_S): Promise
   }
 }
 
+// ---------- Durable shared store (Supabase kv first, Redis second) ----------
+// One summary per commit SHA, read by every language page and instance. The model's answer
+// varies run to run, so it must be generated once and reused, never regenerated per page.
+
+async function storeGet<T>(key: string): Promise<T | null> {
+  if (hasSupabase()) {
+    try {
+      const value = await kvGet<T>(key);
+      if (value) return value;
+    } catch (err) {
+      console.error("[summarize] kv read failed:", err instanceof Error ? err.message : err);
+    }
+  }
+  return redisGet<T>(key);
+}
+
+/** Persists a good result unless one exists already; returns the stored (first) one. */
+async function storeKeepFirst<T>(key: string, value: T): Promise<T> {
+  if (hasSupabase()) {
+    try {
+      return await kvKeepFirst(key, value);
+    } catch (err) {
+      console.error("[summarize] kv write failed:", err instanceof Error ? err.message : err);
+    }
+  }
+  await redisSet(key, value);
+  return value;
+}
+
 // ---------- AI budget ----------
 
 // Hard daily cap on model calls (normal use is ~4 per new commit), so cache misses across serverless
@@ -270,12 +300,12 @@ async function generateRepoSummary(r: RepoInput): Promise<RepoSummary> {
   }
 }
 
-// "remote": one shared entry per commit SHA across every server instance and language page, so
-// /en, /es and /pt (and every instance) show the same AI result instead of each generating its own.
+// The in-process cache only saves round trips; consistency across /en, /es, /pt and instances
+// comes from the durable store (storeGet / storeKeepFirst), keyed by commit SHA.
 async function cachedRepoSummary(key: string, r: RepoInput): Promise<RepoSummary> {
   "use cache: remote";
   cacheTag("summary", `summary:${r.id}`);
-  const stored = await redisGet<RepoSummary>(key);
+  const stored = await storeGet<RepoSummary>(key);
   if (stored) {
     if (stored.fallback) cacheLife("minutes");
     else cacheLife("max");
@@ -284,14 +314,15 @@ async function cachedRepoSummary(key: string, r: RepoInput): Promise<RepoSummary
   const summary = await generateRepoSummary(r);
   if (summary.sourceSha !== r.sha) {
     cacheLife("minutes"); // reused previous summary: retry soon, never persist it under this SHA
-  } else if (summary.fallback) {
+    return summary;
+  }
+  if (summary.fallback) {
     cacheLife("minutes");
     await redisSet(key, summary, REDIS_FALLBACK_TTL_S);
-  } else {
-    cacheLife("max");
-    await redisSet(key, summary);
+    return summary;
   }
-  return summary;
+  cacheLife("max");
+  return storeKeepFirst(key, summary);
 }
 
 export async function summarizeRepo(snapshot: RepoSnapshot): Promise<RepoSummary> {
@@ -347,7 +378,7 @@ let lastGoodOverall: Overall | null = null;
 async function cachedOverall(key: string, items: OverallItem[]): Promise<Overall> {
   "use cache: remote";
   cacheTag("summary", "summary:overall");
-  const stored = await redisGet<Overall>(key);
+  const stored = await storeGet<Overall>(key);
   if (stored) {
     if (stored.fallback) cacheLife("minutes");
     else cacheLife("max");
@@ -357,14 +388,15 @@ async function cachedOverall(key: string, items: OverallItem[]): Promise<Overall
   const overall = await generateOverall(items);
   if (overall === previous) {
     cacheLife("minutes"); // reused previous overview: retry soon, never persist it under these SHAs
-  } else if (overall.fallback) {
+    return overall;
+  }
+  if (overall.fallback) {
     cacheLife("minutes");
     await redisSet(key, overall, REDIS_FALLBACK_TTL_S);
-  } else {
-    cacheLife("max");
-    await redisSet(key, overall);
+    return overall;
   }
-  return overall;
+  cacheLife("max");
+  return storeKeepFirst(key, overall);
 }
 
 export async function summarizeOverall(views: RepoView[]): Promise<Overall> {
