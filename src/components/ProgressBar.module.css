@@ -63,9 +63,8 @@
   color: var(--ink-dim);
 }
 
-.details summary {
-  width: fit-content;
-  cursor: pointer;
+.detailsTitle {
+  font-weight: 400;
   font-family: var(--font-display);
   font-size: 0.5625rem;
   text-transform: uppercase;

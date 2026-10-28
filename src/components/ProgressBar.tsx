@@ -44,8 +44,8 @@ export default function ProgressBar({ stages, dict }: Props) {
       </div>
 
       {stages ? (
-        <details className={styles.details}>
-          <summary>{dict.details}</summary>
+        <div className={styles.details}>
+          <h3 className={styles.detailsTitle}>{dict.details}</h3>
           <ol>
             {STAGES.map((s) => (
               <li key={s.id} data-state={stages[s.id]}>
@@ -56,7 +56,7 @@ export default function ProgressBar({ stages, dict }: Props) {
             ))}
           </ol>
           <p className={styles.note}>{dict.note}</p>
-        </details>
+        </div>
       ) : (
         <p className={styles.note}>{dict.unknown}</p>
       )}
