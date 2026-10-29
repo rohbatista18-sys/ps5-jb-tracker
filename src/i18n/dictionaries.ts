@@ -13,6 +13,12 @@ const en = {
     supportSite: "Support the site with US$ 1",
     supportSiteHint: "Helps keep this site online. It goes to the site, not to the devs, and does not buy the jailbreak.",
   },
+  guide: {
+    label: "New",
+    text: "New to jailbreaking? Check out our new step-by-step guide site.",
+    link: "Open the guide",
+    close: "Close notice",
+  },
   loading: "Loading repository data",
   status: {
     early: "Early",
@@ -115,6 +121,12 @@ const es: Dictionary = {
     supportSite: "Apoya el sitio con US$ 1",
     supportSiteHint: "Ayuda a mantener este sitio en línea. Va para el sitio, no para los devs, y no compra el jailbreak.",
   },
+  guide: {
+    label: "Nuevo",
+    text: "¿Nuevo en el jailbreak? Mira nuestro nuevo sitio con la guía paso a paso.",
+    link: "Abrir la guía",
+    close: "Cerrar aviso",
+  },
   loading: "Cargando datos de los repositorios",
   status: {
     early: "Inicio",
@@ -214,6 +226,12 @@ const pt: Dictionary = {
     language: "Idioma",
     supportSite: "Apoie o site com US$ 1",
     supportSiteHint: "Ajuda a manter este site no ar. Vai para o site, não para os devs, e não compra o jailbreak.",
+  },
+  guide: {
+    label: "Novo",
+    text: "Novo no jailbreak? Confira nosso novo site com o guia passo a passo.",
+    link: "Abrir o guia",
+    close: "Fechar aviso",
   },
   loading: "Carregando dados dos repositórios",
   status: {
