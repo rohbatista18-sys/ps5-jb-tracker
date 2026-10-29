@@ -15,7 +15,7 @@ const en = {
   },
   guide: {
     label: "New",
-    text: "New to jailbreaking? Check out our new step-by-step guide site.",
+    text: "New to jailbreaking? Check out our new step-by-step guide website.",
     link: "Open the guide",
     close: "Close notice",
   },
@@ -123,7 +123,7 @@ const es: Dictionary = {
   },
   guide: {
     label: "Nuevo",
-    text: "¿Nuevo en el jailbreak? Mira nuestro nuevo sitio con la guía paso a paso.",
+    text: "¿Nuevo en el jailbreak? Mira nuestro nuevo sitio web con la guía paso a paso.",
     link: "Abrir la guía",
     close: "Cerrar aviso",
   },
@@ -229,7 +229,7 @@ const pt: Dictionary = {
   },
   guide: {
     label: "Novo",
-    text: "Novo no jailbreak? Confira nosso novo site com o guia passo a passo.",
+    text: "Novo no jailbreak? Confira nosso novo website com o guia passo a passo.",
     link: "Abrir o guia",
     close: "Fechar aviso",
   },
