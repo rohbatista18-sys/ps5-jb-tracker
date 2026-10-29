@@ -7,6 +7,7 @@ import RelativeTime from "@/components/RelativeTime";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import PsButtons from "@/components/PsButtons";
 import NewsSection, { NewsSkeleton } from "@/components/NewsSection";
+import MoreRepos from "@/components/MoreRepos";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
@@ -69,6 +70,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
         <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
           <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
         </Suspense>
+        <MoreRepos locale={lang} dict={dict.moreRepos} newTab={dict.card.newTab} />
       </header>
 
       <main className={styles.main}>

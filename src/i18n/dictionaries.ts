@@ -62,6 +62,12 @@ const en = {
     empty: "No news found right now.",
     disclaimer: "Third-party links, not verified by this site. Never download anything that promises a free jailbreak.",
   },
+  moreRepos: {
+    title: "More repos",
+    close: "Close",
+    subtitle: "Other public PS5 jailbreak / exploit repositories",
+    disclaimer: "These repositories may cover older firmware. They are listed for reference and research only.",
+  },
   overall: { title: "Overall summary", generatedAt: "Generated", loading: "Loading" },
   donate: {
     support: "Support",
@@ -156,6 +162,12 @@ const es: Dictionary = {
     empty: "No se encontraron noticias por ahora.",
     disclaimer: "Enlaces de terceros, no verificados por este sitio. Nunca descargues nada que prometa un jailbreak gratis.",
   },
+  moreRepos: {
+    title: "Más repos",
+    close: "Cerrar",
+    subtitle: "Otros repositorios públicos de jailbreak / exploit de PS5",
+    disclaimer: "Estos repositorios pueden cubrir firmware más antiguo. Se listan solo como referencia e investigación.",
+  },
   overall: { title: "Resumen general", generatedAt: "Generado", loading: "Cargando" },
   donate: {
     support: "Apoya",
@@ -247,6 +259,12 @@ const pt: Dictionary = {
     subtitle: "Do Google Notícias · últimos 60 dias",
     empty: "Nenhuma notícia encontrada no momento.",
     disclaimer: "Links de terceiros, não verificados por este site. Nunca baixe nada que prometa jailbreak grátis.",
+  },
+  moreRepos: {
+    title: "Mais repos",
+    close: "Fechar",
+    subtitle: "Outros repositórios públicos de jailbreak / exploit de PS5",
+    disclaimer: "Estes repositórios podem cobrir firmware mais antigo. Listados apenas como referência e pesquisa.",
   },
   overall: { title: "Resumo geral", generatedAt: "Gerado em", loading: "Carregando" },
   donate: {
