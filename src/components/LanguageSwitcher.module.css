@@ -1,13 +1,14 @@
 .switcher {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .option {
   --pb: var(--line);
   --btn-bg: var(--panel);
+  justify-content: center;
   min-width: 48px;
   padding: 8px 10px;
   font-family: var(--font-display);
@@ -17,8 +18,25 @@
   text-align: center;
 }
 
+/* The idle border is --line, which as a hover fill would put dark text on #2a2a52 (1.5:1).
+   Light the border up first so the global hover fill is --ps-blue-hi (8.2:1). */
+@media (hover: hover) {
+  .option:not([aria-current="true"]):hover {
+    --pb: var(--ps-blue-hi);
+  }
+}
+
 .option[aria-current="true"] {
   --pb: var(--ps-blue-hi);
   --btn-bg: var(--ps-blue);
-  color: #fff;
+  color: #fff; /* 4.95:1 on --ps-blue */
+  cursor: default;
+}
+
+/* The current language is not an action: keep it as-is on hover (white on #5aa9ff would be 2.4:1) */
+@media (hover: hover) {
+  .option.option[aria-current="true"]:hover { /* doubled class: must beat the global .px-btn hover */
+    --btn-bg: var(--ps-blue);
+    color: #fff;
+  }
 }

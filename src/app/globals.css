@@ -10,7 +10,7 @@
 
   --ink: #ecebff;
   --ink-dim: #a9a8cf;
-  --ink-faint: #8f8ebd;
+  --ink-faint: #9e9dcc; /* was #8f8ebd: 6.1:1 on --panel dropped near 4:1 under the CRT vignette; now 7.3:1 */
 
   --ps-blue: #0070d1;
   --ps-blue-hi: #5aa9ff;
@@ -24,6 +24,16 @@
   --gutter: 16px;
   --stage-h: 132px; /* top strip where the visitor sprites walk */
   --radius: 0;
+
+  /* 4px-based spacing scale (multiples of the pixel unit) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 40px;
+  --tap: 44px; /* minimum touch target */
 
   --font-display: var(--font-pixel), "Courier New", monospace;
   --font-text: var(--font-body), ui-monospace, "Courier New", monospace;
@@ -128,9 +138,16 @@ ul, ol {
   color: var(--bg-deep);
 }
 
+/* Hard-edged pixel focus ring (yellow is >= 11:1 on every dark panel) */
 :focus-visible {
   outline: 3px solid var(--yellow);
   outline-offset: 3px;
+}
+
+/* Text links also get a faint fill so the focused one stands out inside dense lists */
+a:not(.px-btn):focus-visible {
+  outline-offset: 2px;
+  background: rgb(255 210 63 / 0.12);
 }
 
 /* Stepped pixel border: set --pb (color) on the element */
@@ -167,15 +184,32 @@ ul, ol {
     3px 0 0 0 var(--pb, var(--ps-blue)),
     inset -3px -3px 0 0 rgb(0 0 0 / 0.35),
     inset 3px 3px 0 0 rgb(255 255 255 / 0.08);
+  text-decoration: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
   transition: transform 80ms steps(2), background-color 80ms steps(2);
 }
 
-.px-btn:hover {
-  --btn-bg: var(--pb, var(--ps-blue));
-  color: var(--bg-deep);
+/* Hover fills the button with its border color. Only on real hover devices, so a tap on a
+   phone does not leave the button stuck "lit". The default fill is --ps-blue-hi, not
+   --ps-blue: dark text on #0070d1 is only 4.1:1, on #5aa9ff it is 8.2:1. */
+@media (hover: hover) {
+  .px-btn:not(:disabled):hover {
+    --btn-bg: var(--pb, var(--ps-blue-hi));
+    color: var(--bg-deep);
+  }
 }
 
-.px-btn:active {
+/* Keyboard focus: ring sits clear of the 3px pixel border so it never merges with it */
+.px-btn:focus-visible {
+  outline-offset: 6px;
+}
+
+.px-btn:disabled {
+  cursor: not-allowed;
+}
+
+.px-btn:not(:disabled):active {
   transform: translateY(2px);
   box-shadow:
     0 -3px 0 0 var(--pb, var(--ps-blue)),
@@ -183,6 +217,13 @@ ul, ol {
     -3px 0 0 0 var(--pb, var(--ps-blue)),
     3px 0 0 0 var(--pb, var(--ps-blue)),
     inset 3px 3px 0 0 rgb(0 0 0 / 0.35);
+}
+
+/* Touch screens and phones: every pixel button is at least a 44px tap target */
+@media (pointer: coarse), (max-width: 639px) {
+  .px-btn {
+    min-height: var(--tap);
+  }
 }
 
 .sr-only {

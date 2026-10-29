@@ -13,7 +13,7 @@ interface Props {
 export default function MoreRepos({ locale, dict, newTab }: Props) {
   const repos = EXTRA_REPOS;
   return (
-    <NewsDialog label={dict.title} closeLabel={dict.close} count={repos.length}>
+    <NewsDialog label={dict.title} closeLabel={dict.close} count={repos.length} titleId="more-repos-title">
       <section className={`px-box ${styles.section}`} aria-labelledby="more-repos-title">
         <header className={styles.head}>
           <h2 id="more-repos-title" className={styles.title}>

@@ -44,6 +44,8 @@
   color: #ffffff;
   text-shadow: 2px 2px 0 rgb(0 0 0 / 0.6);
   white-space: pre-line;
+  max-width: 72ch; /* full 1240px width ran ~110 characters per line */
+  text-wrap: pretty;
 }
 
 .cursor {

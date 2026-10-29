@@ -57,12 +57,12 @@
   padding: 10px 12px;
   background: var(--bg-deep);
   box-shadow: 0 0 0 2px var(--line);
-  transition: box-shadow 120ms ease-out;
+  transition: box-shadow 80ms steps(2);
 }
 
 .item:hover,
 .item:focus-within {
-  box-shadow: 0 0 0 2px var(--cyan), 0 0 12px rgb(45 226 230 / 0.25);
+  box-shadow: 0 0 0 2px var(--cyan), 4px 4px 0 2px rgb(45 226 230 / 0.25);
 }
 
 .link {

@@ -407,7 +407,7 @@ export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsS
   return (
     <>
       <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
-      <div className={styles.hud} role="status" aria-live="polite">
+      <div className={styles.hud}>
         <span className={styles.dot} aria-hidden="true">
           ●
         </span>

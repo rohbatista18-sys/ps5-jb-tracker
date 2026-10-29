@@ -6,6 +6,10 @@ import { sendReaction, useReactionQuota, useReactions, type SendResult } from "@
 import FlagBR from "./FlagBR";
 import styles from "./Reactions.module.css";
 
+// Local copy of the dictionary `fill` helper, so this client component doesn't bundle every dictionary.
+const fill = (template: string, vars: Record<string, string | number>) =>
+  template.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? ""));
+
 interface Props {
   repo: string;
   nickname: string;
@@ -17,6 +21,7 @@ interface Props {
     slowDown: string;
     remaining: string;
     quotaReached: string;
+    sent: string;
     names: Record<ReactionKey, string>;
   };
 }
@@ -34,6 +39,10 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
   const quota = useReactionQuota();
   const [bursts, setBursts] = useState<Burst[]>([]);
   const [result, setResult] = useState<SendResult | null>(null);
+  // Screen-reader feedback only for the card the visitor clicked (the quota is shared by all
+  // three cards, so a live region per card would announce every change three times).
+  const [announcement, setAnnouncement] = useState("");
+  const statusId = `reactions-status-${repo}`;
   const outOfQuota = quota?.remaining === 0;
   const resetTime = quota?.resetAt
     ? new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }).format(new Date(quota.resetAt))
@@ -53,18 +62,28 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
     const id = nextId.current++;
     setBursts((b) => [...b.slice(-11), { id, reaction: r, x: box.left - parent.left + box.width / 2 }]);
     setTimeout(() => setBursts((b) => b.filter((p) => p.id !== id)), 900);
-    setResult(await sendReaction(repo, r.key));
+    const res = await sendReaction(repo, r.key);
+    setResult(res);
+    setAnnouncement(res === "ok" ? fill(text.sent, { name: text.names[r.key], dev: nickname }) : "");
   }
 
   const label = (r: Reaction) => `${text.send} ${text.names[r.key]} — ${nickname}`;
   const count = (r: Reaction) => (counts ? fmt.format(counts[r.key]) : "·");
 
+  const status = outOfQuota
+    ? { warn: true, msg: fill(text.quotaReached, { max: REACTION_QUOTA, time: resetTime }) }
+    : result === "error"
+      ? { warn: true, msg: text.slowDown }
+      : quota
+        ? { warn: false, msg: fill(text.remaining, { n: quota.remaining, max: REACTION_QUOTA }) }
+        : null;
+
   return (
     <section className={styles.reactions} aria-label={`${text.title} — ${nickname}`}>
       <div className={styles.head}>
         <span className={styles.title}>{text.title}</span>
-        <span className={styles.total} aria-live="polite">
-          {total === null ? "…" : text.total.replace("{n}", fmt.format(total))}
+        <span className={styles.total}>
+          {total === null ? "…" : fill(text.total, { n: fmt.format(total) })}
         </span>
       </div>
 
@@ -75,6 +94,7 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
               type="button"
               className={styles.button}
               disabled={outOfQuota}
+              aria-describedby={statusId}
               aria-label={label(r)}
               title={text.names[r.key]}
               onClick={(e) => react(r, e.currentTarget)}
@@ -94,6 +114,7 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
           type="button"
           className={`${styles.button} ${styles.exclusive}`}
           disabled={outOfQuota}
+          aria-describedby={statusId}
           aria-label={label(r)}
           title={text.names[r.key]}
           onClick={(e) => react(r, e.currentTarget)}
@@ -106,21 +127,12 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
         </button>
       ))}
 
-      {outOfQuota ? (
-        <p className={styles.warning} role="status">
-          {text.quotaReached.replace("{max}", String(REACTION_QUOTA)).replace("{time}", resetTime)}
-        </p>
-      ) : result === "error" ? (
-        <p className={styles.warning} role="status">
-          {text.slowDown}
-        </p>
-      ) : (
-        quota && (
-          <p className={styles.remaining}>
-            {text.remaining.replace("{n}", String(quota.remaining)).replace("{max}", String(REACTION_QUOTA))}
-          </p>
-        )
-      )}
+      <p id={statusId} className={status?.warn ? styles.warning : styles.remaining} hidden={!status}>
+        {status?.msg}
+      </p>
+      <span className="sr-only" role="status">
+        {announcement && status ? `${announcement} ${status.msg}` : status?.warn && result ? status.msg : ""}
+      </span>
 
       <div className={styles.bursts} aria-hidden="true">
         {bursts.map((b) => (

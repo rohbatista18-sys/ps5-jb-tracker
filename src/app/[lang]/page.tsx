@@ -21,27 +21,28 @@ async function LastChecked({ locale }: { locale: Locale }) {
 
 async function Dashboard({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const { repos, overall } = await getDashboard();
+  // Overall summary first: it answers "how close is the jailbreak?" before any scrolling.
   return (
     <>
+      <OverallSummary overall={overall} locale={locale} dict={dict.overall} aiHint={dict.card.aiHint} />
       <div className={styles.grid}>
         {repos.map((repo) => (
           <RepoCard key={repo.config.id} repo={repo} locale={locale} dict={dict} />
         ))}
       </div>
-      <OverallSummary overall={overall} locale={locale} dict={dict.overall} aiHint={dict.card.aiHint} />
     </>
   );
 }
 
 function DashboardSkeleton({ dict }: { dict: Dictionary }) {
   return (
-    <div role="status" aria-label={dict.loading}>
+    <div role="status" aria-label={dict.loading} aria-busy="true" className={styles.main}>
+      <OverallSummarySkeleton dict={dict.overall} />
       <div className={styles.grid}>
         <RepoCardSkeleton />
         <RepoCardSkeleton />
         <RepoCardSkeleton />
       </div>
-      <OverallSummarySkeleton dict={dict.overall} />
     </div>
   );
 }
@@ -67,10 +68,13 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <LastChecked locale={lang} />
           </Suspense>
         </p>
-        <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
-          <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
-        </Suspense>
-        <MoreRepos locale={lang} dict={dict.moreRepos} newTab={dict.card.newTab} />
+        {/* Both modal buttons on one row, to keep the header short. */}
+        <div className={styles.headerActions}>
+          <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
+            <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
+          </Suspense>{" "}
+          <MoreRepos locale={lang} dict={dict.moreRepos} newTab={dict.card.newTab} />
+        </div>
       </header>
 
       <main className={styles.main}>
@@ -80,7 +84,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.notice}>
+        <div className={styles.notice} role="note" aria-label={dict.footer.noticeLabel}>
           <p className={styles.warning}>{dict.footer.donationWarning}</p>
           <p>{dict.footer.donations}</p>
           <p>{dict.footer.nonprofit}</p>
@@ -91,6 +95,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           {dict.footer.meta} ·{" "}
           <a href={SITE_SOURCE_URL} target="_blank" rel="noopener noreferrer">
             {dict.footer.source}
+            <span className="sr-only"> {dict.card.newTab}</span>
           </a>
         </p>
       </footer>

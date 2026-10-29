@@ -16,14 +16,31 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: var(--space-4);
   text-align: center;
+}
+
+/* News + More repos: side by side when they fit, stacked otherwise. Both buttons get the
+   same width either way, so they read as a pair instead of two ragged pills. */
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  margin-top: var(--space-2);
+}
+
+.headerActions > button {
+  flex: 0 1 240px;
+  min-width: max-content;
+  justify-content: center;
 }
 
 .buttons {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--space-3);
 }
 
 .buttons [data-b="triangle"] { color: #40e0b0; }
@@ -60,7 +77,9 @@
 .subtitle {
   max-width: 36ch;
   font-size: 1.375rem;
+  line-height: 1.3;
   color: var(--ink-dim);
+  text-wrap: balance;
 }
 
 .checked {
@@ -117,19 +136,20 @@
 .main {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: var(--space-7);
 }
 
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 28px;
+  gap: var(--space-6) var(--space-5);
   align-items: stretch;
 }
 
 @media (min-width: 760px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
   }
 
   .page {
@@ -147,25 +167,41 @@
 .footer {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: var(--space-2);
   margin-top: auto;
-  padding: 14px 16px;
+  padding: var(--space-4);
   font-size: 1.125rem;
+  line-height: 1.3;
   color: var(--ink-dim);
   text-align: center;
   background: rgb(6 6 12 / 0.85);
   border-top: var(--px) dashed var(--line);
 }
 
+/* Readable line length for the centered footer copy */
+.footer > p {
+  max-width: 80ch;
+  text-wrap: pretty;
+}
+
 .notice {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 6px;
-  padding: 10px 14px;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  margin-bottom: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   color: var(--ink);
   background: rgb(255 210 63 / 0.08);
   border: 2px solid rgb(255 210 63 / 0.55);
+  box-shadow: 4px 4px 0 0 rgb(0 0 0 / 0.55);
+}
+
+.notice p {
+  max-width: 80ch;
+  text-wrap: pretty;
 }
 
 .notice p::before {
@@ -183,8 +219,14 @@
   color: var(--ink-faint);
 }
 
+/* The "donations do not buy the jailbreak" warning: the loudest line in the footer */
 .notice .warning {
+  margin-bottom: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  font-size: 1.3125rem;
   color: var(--yellow);
+  background: var(--bg-deep);
+  box-shadow: 0 0 0 2px var(--yellow);
 }
 
 .notice .warning::before {

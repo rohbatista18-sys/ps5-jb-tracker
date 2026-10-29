@@ -23,7 +23,7 @@
 .list {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 14px;
+  gap: var(--space-3) var(--space-4); /* clears the 3px pixel borders of neighbouring buttons */
   min-width: 0;
 }
 

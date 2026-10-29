@@ -15,7 +15,7 @@ interface Props {
 export default async function NewsSection({ locale, dict, newTab }: Props) {
   const items = await getNews(locale);
   return (
-    <NewsDialog label={dict.title} closeLabel={dict.close} count={items.length}>
+    <NewsDialog label={dict.title} closeLabel={dict.close} count={items.length} titleId="news-title">
       <section className={`px-box ${styles.news}`} aria-labelledby="news-title">
         <header className={styles.head}>
           <h2 id="news-title" className={styles.title}>

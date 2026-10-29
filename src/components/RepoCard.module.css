@@ -10,8 +10,14 @@
   row-gap: 16px;
   align-content: start;
   min-width: 0;
-  padding: 18px 16px 20px;
+  padding: 20px var(--space-4) var(--space-5);
   background: var(--panel);
+}
+
+/* Reactions always sit on the last shared row, even when a card has no recent commits
+   (5 children instead of 6), so the reaction strips stay level across the grid. */
+.card > :last-child:not(:first-child) {
+  grid-row: -2 / -1;
 }
 
 /* top "cartridge" stripe */
@@ -215,6 +221,42 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.commitsToggle summary {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.commitsToggle summary::-webkit-details-marker {
+  display: none;
+}
+
+.commitsToggle summary:hover {
+  color: var(--cyan);
+}
+
+.commitsToggle summary:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 4px;
+}
+
+.chevron {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.commitsToggle[open] .chevron {
+  transform: rotate(90deg);
+}
+
+@media (pointer: coarse) {
+  .commitsToggle summary {
+    min-height: var(--tap);
+  }
 }
 
 .commits ol {

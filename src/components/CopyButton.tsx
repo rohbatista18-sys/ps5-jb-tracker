@@ -32,18 +32,22 @@ export default function CopyButton({ value, ariaLabel, text, className }: Props)
     return () => clearTimeout(id);
   }, [state]);
 
+  // The live region sits outside the button: content inside an aria-labelled button is not
+  // reliably announced, and the button's name must stay stable while the feedback changes.
   return (
-    <button
-      type="button"
-      className={className}
-      title={value}
-      aria-label={ariaLabel}
-      onClick={() => copy(value).then(() => setState("ok"), () => setState("error"))}
-    >
-      <span aria-hidden="true">{state === "ok" ? text.copied : state === "error" ? text.error : text.copy}</span>
-      <span className="sr-only" aria-live="polite">
+    <>
+      <button
+        type="button"
+        className={className}
+        title={value}
+        aria-label={ariaLabel}
+        onClick={() => copy(value).then(() => setState("ok"), () => setState("error"))}
+      >
+        <span aria-hidden="true">{state === "ok" ? text.copied : state === "error" ? text.error : text.copy}</span>
+      </button>
+      <span className="sr-only" role="status">
         {state === "ok" ? text.copiedSr : state === "error" ? text.errorSr : ""}
       </span>
-    </button>
+    </>
   );
 }

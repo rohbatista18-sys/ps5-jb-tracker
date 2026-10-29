@@ -22,14 +22,16 @@
   font-size: 0.625rem;
   color: var(--bg-deep);
   background: var(--yellow);
+  box-shadow: 0 0 0 2px var(--bg-deep); /* keeps the badge edge visible on the cyan hover fill */
   text-align: center;
 }
 
 .dialog {
-  width: min(1100px, calc(100vw - 24px));
-  max-height: calc(100dvh - 48px);
+  width: min(1100px, calc(100vw - 16px));
+  max-height: calc(100dvh - 32px);
   margin: auto;
-  padding: 0;
+  /* room around the panel so the pixel border and the close button's focus ring are not clipped */
+  padding: var(--space-3);
   overflow: auto;
   color: var(--ink);
   background: transparent;
@@ -52,7 +54,8 @@
   --pb: var(--magenta);
   --btn-bg: var(--panel);
   position: sticky;
-  top: 0;
+  top: var(--space-3);
+  min-height: var(--tap);
   z-index: 1;
   align-self: flex-end;
   padding: 8px 12px;
@@ -64,13 +67,14 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .dialog[open] {
-    animation: pop 160ms ease-out;
+    animation: pop 160ms steps(4, jump-end);
   }
 }
 
+/* Stepped slide-in, no scale: scaling blurs the pixel font mid-animation */
 @keyframes pop {
   from {
     opacity: 0;
-    transform: translateY(8px) scale(0.98);
+    transform: translateY(8px);
   }
 }

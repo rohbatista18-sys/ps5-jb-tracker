@@ -96,9 +96,14 @@ export default function RepoCard({ repo, locale, dict }: Props) {
         )}
       </div>
 
-      {commits.length > 0 && (
-        <section className={styles.commits} aria-label={t.recentCommits}>
-          <h3 className={styles.label}>{t.recentCommits}</h3>
+      {/* Collapsed by default to keep the cards short; "Last update" above already shows the latest commit time.
+          Always rendered (even when empty) so the card keeps its 6 subgrid rows. */}
+      {commits.length > 0 ? (
+        <details className={`${styles.commits} ${styles.commitsToggle}`}>
+          <summary className={styles.label}>
+            <span className={styles.chevron} aria-hidden="true">▸ </span>
+            {fill(t.recentCommits, { n: commits.length })}
+          </summary>
           <ol>
             {commits.map((c) => (
               <li key={c.sha}>
@@ -110,7 +115,9 @@ export default function RepoCard({ repo, locale, dict }: Props) {
               </li>
             ))}
           </ol>
-        </section>
+        </details>
+      ) : (
+        <div aria-hidden="true" />
       )}
       <Reactions
         repo={config.id}
