@@ -1,11 +1,13 @@
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { addReaction, getAllReactions, isRepoId, withBaseline } from "@/lib/reactions";
 import { isReactionAllowed, isReactionKey } from "@/lib/reactions-config";
 import { peekQuota, takeQuota } from "@/lib/reaction-quota";
 import { rateLimit } from "@/lib/rate-limit";
+import { broadcastSalve } from "@/lib/realtime";
 import { blockUntilWindowEnd, clientIp, isForeignOrigin, locallyBlocked, readBody } from "@/lib/request";
 
-const MAX_BODY_BYTES = 120;
+const MAX_BODY_BYTES = 160;
+const NONCE = /^[0-9a-f]{12}$/;
 const WRITE_LIMIT_PER_MIN = 20; // anti-flood; the real per-person limit is the hourly quota
 const READ_LIMIT_PER_MIN = 30;
 
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
 
   const raw = await readBody(req, MAX_BODY_BYTES);
   if (raw === null) return json({ error: "payload too large" }, 413);
-  let data: { repo?: unknown; reaction?: unknown };
+  let data: { repo?: unknown; reaction?: unknown; n?: unknown };
   try {
     data = JSON.parse(raw);
   } catch {
@@ -56,5 +58,7 @@ export async function POST(req: NextRequest) {
     return json({ error: "quota", remaining: 0, resetAt: quota.resetAt }, 429, { "Retry-After": String(retry) });
   }
   const counts = withBaseline(await addReaction(data.repo, data.reaction));
+  const salve = { repo: data.repo, reaction: data.reaction, n: typeof data.n === "string" && NONCE.test(data.n) ? data.n : "" };
+  after(() => broadcastSalve(salve));
   return json({ repo: data.repo, counts, remaining: quota.remaining, resetAt: quota.resetAt });
 }

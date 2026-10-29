@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 
+// Receive-only live salves (Supabase Realtime); only this project's host is allowed.
+const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL?.match(/^https:\/\/([a-z0-9-]+\.supabase\.co)\/?$/)?.[1];
+const realtimeHosts = supabaseHost ? ` https://${supabaseHost} wss://${supabaseHost}` : "";
+
 // 'unsafe-inline' for scripts: Cache Components / partial prerendering serves a static
 // shell, which is incompatible with per-request nonces. Risk is mitigated by never
 // rendering untrusted content as HTML (AI and repo text are rendered as plain text).
@@ -16,7 +20,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self'${realtimeHosts}${isDev ? " ws: wss:" : ""}`,
   "object-src 'none'",
   "frame-src 'none'",
   "worker-src 'none'",

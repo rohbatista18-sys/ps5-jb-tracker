@@ -94,7 +94,7 @@ const en = {
     donations: "Not affiliated with Forever-Necessary. Donation links go straight to each dev; this site gets nothing.",
     nonprofit: "This is a non-profit site.",
     privacy:
-      "Privacy: no accounts, analytics or tracking. The only cookie stores your language. The online counter uses a random, anonymous ID that lives only in this tab and is deleted from our servers within a minute. No IP addresses are stored.",
+      "Privacy: no accounts, analytics or tracking. The only cookie stores your language. The online counter uses a random, anonymous ID that lives only in this tab and is deleted from our servers within a minute. No IP addresses are stored. Live salves come over a receive-only connection to Supabase, our database provider: it carries only which emoji was sent, never who sent it.",
   },
 };
 
@@ -194,7 +194,7 @@ const es: Dictionary = {
     donations: "Sin afiliación con Forever-Necessary. Los enlaces de donación van directo a cada dev; este sitio no recibe nada.",
     nonprofit: "Este sitio no tiene fines de lucro.",
     privacy:
-      "Privacidad: sin cuentas, analíticas ni rastreo. La única cookie guarda tu idioma. El contador en línea usa un ID aleatorio y anónimo que solo existe en esta pestaña y se borra de nuestros servidores en menos de un minuto. No guardamos direcciones IP.",
+      "Privacidad: sin cuentas, analíticas ni rastreo. La única cookie guarda tu idioma. El contador en línea usa un ID aleatorio y anónimo que solo existe en esta pestaña y se borra de nuestros servidores en menos de un minuto. No guardamos direcciones IP. Los salves en vivo llegan por una conexión de solo lectura con Supabase, nuestro proveedor de base de datos: solo lleva qué emoji se envió, nunca quién lo envió.",
   },
 };
 
@@ -292,7 +292,7 @@ const pt: Dictionary = {
     donations: "Sem afiliação com o Forever-Necessary. Os links de doação vão direto para cada dev; este site não recebe nada.",
     nonprofit: "Este site não tem fins lucrativos.",
     privacy:
-      "Privacidade: sem contas, analytics ou rastreamento. O único cookie guarda o seu idioma. O contador online usa um ID aleatório e anônimo que existe só nesta aba e é apagado dos nossos servidores em menos de um minuto. Não guardamos endereços IP.",
+      "Privacidade: sem contas, analytics ou rastreamento. O único cookie guarda o seu idioma. O contador online usa um ID aleatório e anônimo que existe só nesta aba e é apagado dos nossos servidores em menos de um minuto. Não guardamos endereços IP. Os salves ao vivo chegam por uma conexão só de leitura com o Supabase, nosso provedor de banco de dados: ela leva só qual emoji foi enviado, nunca quem enviou.",
   },
 };
 

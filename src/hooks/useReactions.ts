@@ -61,6 +61,17 @@ function subscribe(listener: () => void) {
 
 export type SendResult = "ok" | "quota" | "error";
 
+// Nonces of salves sent from this tab: the live broadcast echoes them back, and they are skipped.
+const ownNonces = new Set<string>();
+export const isOwnSalve = (n: unknown) => typeof n === "string" && ownNonces.has(n);
+
+function newNonce() {
+  const n = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, "0")).join("");
+  ownNonces.add(n);
+  if (ownNonces.size > 20) ownNonces.delete(ownNonces.values().next().value!);
+  return n;
+}
+
 /** Optimistic: bumps the count right away and rolls back if the server refuses. */
 export async function sendReaction(repo: string, reaction: ReactionKey): Promise<SendResult> {
   const prev = state;
@@ -74,7 +85,7 @@ export async function sendReaction(repo: string, reaction: ReactionKey): Promise
     const res = await fetch(ENDPOINT, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ repo, reaction }),
+      body: JSON.stringify({ repo, reaction, n: newNonce() }),
       cache: "no-store",
     });
     const data = (await res.json().catch(() => ({}))) as Partial<{ repo: string; counts: ReactionCounts; error: string } & QuotaState>;

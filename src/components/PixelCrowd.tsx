@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type CSSProperties } from "react";
 import { getVisitorId, usePresence } from "@/hooks/usePresence";
+import { useLiveSalves } from "@/hooks/useLiveSalves";
 import { EMOTE_EVENT, REACTIONS, type EmoteDetail } from "@/lib/reactions-config";
 import { SPRITES, SPRITE_HEIGHT, rasterize, rasterizeFlagBR, rasterizeLabel } from "./sprites";
 import { DEPTH_ALPHA, DEPTH_SCALE, createScenery, type Platform, type Scenery } from "./scenery";
@@ -96,7 +97,8 @@ interface Surface {
   W: number;
   H: number;
   px: number;
-  right: number; // emotes and the shout stay left of this
+  left: number; // emotes and the shout stay between left and right
+  right: number;
   emojiFont: string;
   shoutFont: string;
 }
@@ -104,6 +106,8 @@ interface Surface {
 export interface Crowd {
   setCount(n: number): void;
   emote(emoji: string, shout?: string): void;
+  /** A salve another visitor sent, shown above one of the other sprites in view. */
+  emoteOther(emoji: string, shout?: string): void;
   destroy(): void;
 }
 
@@ -174,11 +178,14 @@ export function createCrowd(
   const actors: Actor[] = [];
   const order: Actor[] = [];
   const emotes: Emote[] = [];
+  // Salves from other visitors: above a visible sprite (a) or, if none is in view, a visible ledge.
+  const others: { a: Actor | null; x: number; top: number; e: Emote }[] = [];
   const load: number[] = [];
   const seed = hash(selfSeed);
   const pixelFont = getComputedStyle(document.documentElement).getPropertyValue("--font-pixel").trim() || "monospace";
-  const mainSurf: Surface = { ctx, W: 0, H: 0, px: 4, right: 0, emojiFont: "", shoutFont: "" };
-  const overSurf: Surface = { ctx: octx, W: 0, H: 0, px: 3, right: 0, emojiFont: "", shoutFont: "" };
+  const mainSurf: Surface = { ctx, W: 0, H: 0, px: 4, left: 0, right: 0, emojiFont: "", shoutFont: "" };
+  const overSurf: Surface = { ctx: octx, W: 0, H: 0, px: 3, left: 0, right: 0, emojiFont: "", shoutFont: "" };
+  const otherSurf: Surface = { ctx, W: 0, H: 0, px: 4, left: 0, right: 0, emojiFont: "", shoutFont: "" };
   let target = 1;
   let W = 0;
   let H = 0;
@@ -416,6 +423,11 @@ export function createCrowd(
     mainSurf.px = px;
     mainSurf.emojiFont = `${7 * px}px ${EMOJI_FONT}`;
     mainSurf.shoutFont = `${2 * px}px ${pixelFont}, monospace`;
+    otherSurf.W = otherSurf.right = W;
+    otherSurf.H = H;
+    otherSurf.px = px;
+    otherSurf.emojiFont = mainSurf.emojiFont;
+    otherSurf.shoutFont = mainSurf.shoutFont;
     ctx.imageSmoothingEnabled = false;
 
     // Relative position on the old platform survives the rebuild.
@@ -545,8 +557,6 @@ export function createCrowd(
 
   // Emojis the visitor sent rise above their own sprite and fade out.
   const drawEmotes = (s: Surface, x: number, top: number, animated: boolean) => {
-    const c = s.ctx;
-    const p = s.px;
     const now = performance.now();
     let nextStart = now;
     for (let i = 0; i < emotes.length; i++) {
@@ -562,17 +572,22 @@ export function createCrowd(
       if (e.start === null ? now - e.created < EMOTE_PENDING_MAX_MS : now - e.start < duration(e)) emotes[n++] = e;
     }
     emotes.length = n;
+    for (let i = 0; i < emotes.length; i++) paintEmote(s, emotes[i], now, x, top, animated);
+  };
+
+  const paintEmote = (s: Surface, e: Emote, now: number, x: number, top: number, animated: boolean) => {
+    const c = s.ctx;
+    const p = s.px;
     const size = 7 * p;
     c.font = s.emojiFont;
     c.textAlign = "center";
     c.textBaseline = "bottom";
-    for (let i = 0; i < emotes.length; i++) {
-      const e = emotes[i];
-      if (e.start === null || e.start > now) continue;
+    if (e.start === null || e.start > now) return;
+    {
       const t = (now - e.start) / duration(e);
       const rise = animated ? Math.round(t * 4) * p : 0; // rises in whole pixel steps, 8-bit style
       const scale = animated && t < 0.15 ? 0.6 + (t / 0.15) * 0.4 : 1;
-      const ex = clamp(x + e.jitter * p, size / 2, s.right - size / 2);
+      const ex = clamp(x + e.jitter * p, s.left + size / 2, s.right - size / 2);
       const ey = Math.max(size + p, top - rise);
       c.globalAlpha = animated ? (t < 0.1 ? t / 0.1 : t > 0.6 ? Math.max(0, (1 - t) / 0.4) : 1) : 1;
       c.save();
@@ -620,14 +635,14 @@ export function createCrowd(
     const pad = 2 * p;
     const right = x + half + 2 * p;
     const roomR = s.right - right - 2 * pad - 2 * p;
-    const roomL = x - half - 2 * p - 2 * pad - 2 * p;
+    const roomL = x - half - 2 * p - 2 * pad - 2 * p - s.left;
     wrap(s, e, text, Math.max(roomR, roomL, 6 * fs));
     const n = e.lines.length;
     const bw = e.lineW + pad * 2;
     const bh = n * fs + (n - 1) * p + pad * 2;
     const left = x - half - 2 * p - bw;
-    const rawX = right + bw + p <= s.right ? right : left >= p ? left : (s.right - bw) / 2;
-    const bx = Math.round(clamp(rawX, 2 * p, s.right - bw - 2 * p) / p) * p;
+    const rawX = right + bw + p <= s.right ? right : left >= s.left + p ? left : (s.left + s.right - bw) / 2;
+    const bx = Math.round(clamp(rawX, s.left + 2 * p, s.right - bw - 2 * p) / p) * p;
     const by = Math.round(clamp(cy - bh / 2, 2 * p, s.H - bh - 2 * p) / p) * p;
     c.fillStyle = "#009c3b";
     c.fillRect(bx - p, by - p, bw + 2 * p, bh + 2 * p);
@@ -679,6 +694,36 @@ export function createCrowd(
     octx.drawImage(sprite, a.x, feet - a.h - jumpOff, a.w, a.h);
     octx.drawImage(ledge.front, 0, feet - 2 * c, LEDGE_COLS * c, 2 * c);
     drawSelfExtras(overSurf, a.x, a.w, feet - a.h - jumpOff, animated);
+  };
+
+  /** True when the page shows plain background at this canvas point (no content block over it). */
+  const isClear = (x: number, y: number) => {
+    const cx = x / ratio;
+    const cy = y / ratio;
+    if (cx < 0 || cy < 0 || cx >= cssW || y >= visH) return false;
+    const el = document.elementFromPoint(cx, cy);
+    return !el || el === document.body || el === document.documentElement || el === canvas;
+  };
+
+  const drawOthers = (animated: boolean) => {
+    const now = performance.now();
+    let n = 0;
+    for (let i = 0; i < others.length; i++) {
+      const o = others[i];
+      if (now - (o.e.start ?? now) >= duration(o.e)) continue;
+      if (o.a && !o.a.leaving && o.a.age >= 0) {
+        o.x = o.a.x + o.a.w / 2;
+        o.top = baseOf(o.a) - o.a.h - jumpOffset(o.a) - 2 * o.a.cell;
+      }
+      // Keep the emoji and shout in the free gutter on the sprite's side, not behind the content.
+      const g = gutter - 2 * px;
+      const wide = g > 60 * ratio;
+      otherSurf.left = !wide || o.x < W / 2 ? 0 : W - g;
+      otherSurf.right = !wide || o.x >= W / 2 ? W : g;
+      paintEmote(otherSurf, o.e, now, o.x, o.top, animated);
+      others[n++] = o;
+    }
+    others.length = n;
   };
 
   const draw = (animated: boolean) => {
@@ -747,6 +792,8 @@ export function createCrowd(
     ctx.globalAlpha = 1;
     scenery?.drawFront?.(ctx, clock, animated);
 
+    if (others.length) drawOthers(animated);
+
     // The YOU label and emotes sit above everything, scenery foreground included.
     if (selfX >= 0) drawSelfExtras(mainSurf, selfX, selfW, selfTop, animated);
     if (useOverlay && selfActor) drawOverlay(selfActor, animated);
@@ -778,7 +825,7 @@ export function createCrowd(
     if (raf) return;
     draw(false);
     clearTimeout(staticTimer);
-    if (emotes.length) staticTimer = setTimeout(redrawStatic, EMOTE_MS);
+    if (emotes.length || others.length) staticTimer = setTimeout(redrawStatic, EMOTE_MS);
   };
 
   const onResize = () => {
@@ -819,6 +866,35 @@ export function createCrowd(
         lineW: 0,
       });
       if (emotes.length > MAX_EMOTES) emotes.splice(0, emotes.length - MAX_EMOTES);
+      redrawStatic();
+    },
+    emoteOther(emoji, shout) {
+      if (document.hidden) return;
+      const e: Emote = { emoji, shout, created: performance.now(), start: performance.now(), jitter: 0, lines: [], wrapKey: -1, lineW: 0 };
+      // Prefer a sprite whose head and the space above it are in view (not behind a card).
+      const picks: Actor[] = [];
+      for (const a of actors) {
+        if (a.self || a.leaving || a.age < 0) continue;
+        const x = a.x + a.w / 2;
+        const top = baseOf(a) - a.h;
+        if (isClear(x, top + a.cell) && isClear(x, top - 14 * a.cell)) picks.push(a);
+      }
+      if (picks.length) {
+        const a = picks[Math.floor(Math.random() * picks.length)];
+        others.push({ a, x: a.x + a.w / 2, top: baseOf(a) - a.h - 2 * a.cell, e });
+      } else {
+        // Nobody in view: the salve rises from a visible ledge instead.
+        const spots: number[] = [];
+        for (let i = 0; i < plats.length; i++) {
+          const pl = plats[i];
+          const x = (pl.x0 + pl.x1) / 2;
+          if (isClear(x, pl.y - 2 * px) && isClear(x, pl.y - 18 * px)) spots.push(i);
+        }
+        if (!spots.length) return;
+        const pl = plats[spots[Math.floor(Math.random() * spots.length)]];
+        others.push({ a: null, x: (pl.x0 + pl.x1) / 2, top: pl.y - 4 * px, e });
+      }
+      if (others.length > MAX_EMOTES) others.splice(0, others.length - MAX_EMOTES);
       redrawStatic();
     },
     destroy() {
@@ -876,6 +952,8 @@ export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsS
     window.addEventListener(EMOTE_EVENT, onEmote);
     return () => window.removeEventListener(EMOTE_EVENT, onEmote);
   }, []);
+
+  useLiveSalves((r) => crowdRef.current?.emoteOther(r.emoji, "shout" in r ? r.shout : undefined));
 
   const extra = online !== null && online > MAX_SPRITES ? online - MAX_SPRITES : 0;
 
