@@ -7,11 +7,13 @@ export interface DonationLink {
 }
 
 export interface RepoConfig {
-  id: "zig" | "pasta" | "kuzi";
+  id: "zig" | "pasta" | "kuzi" | "zeco";
   nickname: string; // same as the GitHub username
   owner: string;
   repo: string;
+  gistId?: string; // when set, fetches from the Gist API instead of the Repos API
   x: string; // X/Twitter handle, without "@"
+  youtube?: string; // YouTube channel handle or path segment, without "@"
   donations: DonationLink[];
   donationNote?: string;
 }

@@ -4,10 +4,10 @@ const en = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Track the public PS5 firmware 14.10 jailbreak research (ZigZagBoi1, pastawithpesto and kuzibelit) in one place, with AI summaries, last commit times and donation links.",
+      "Track the public PS5 firmware 14.10 jailbreak research (ZigZagBoi1, pastawithpesto, kuzibelit and zecoxao) in one place, with AI summaries, last commit times and donation links.",
   },
   header: {
-    subtitle: "Progress of the 3 public firmware 14.10 jailbreak research projects, in one place.",
+    subtitle: "Progress of the 4 public firmware 14.10 jailbreak research projects, in one place.",
     lastChecked: "Last checked",
     language: "Language",
     supportSite: "Support the site with US$ 1",
@@ -38,6 +38,7 @@ const en = {
     noCommits: "No commits",
     recentCommits: "Recent commits ({n})",
     xProfile: "{name} on X",
+    ytProfile: "{name} on YouTube",
   },
   progress: {
     title: "Estimated progress",
@@ -112,10 +113,10 @@ const es: Dictionary = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Sigue en un solo lugar las investigaciones públicas de jailbreak del PS5 en el firmware 14.10 (ZigZagBoi1, pastawithpesto y kuzibelit), con resúmenes por IA, último commit y enlaces de donación.",
+      "Sigue en un solo lugar las investigaciones públicas de jailbreak del PS5 en el firmware 14.10 (ZigZagBoi1, pastawithpesto, kuzibelit y zecoxao), con resúmenes por IA, último commit y enlaces de donación.",
   },
   header: {
-    subtitle: "El progreso de las 3 investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
+    subtitle: "El progreso de las 4 investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
     lastChecked: "Última verificación",
     language: "Idioma",
     supportSite: "Apoya el sitio con US$ 1",
@@ -146,6 +147,7 @@ const es: Dictionary = {
     noCommits: "Sin commits",
     recentCommits: "Commits recientes ({n})",
     xProfile: "{name} en X",
+    ytProfile: "{name} en YouTube",
   },
   progress: {
     title: "Progreso estimado",
@@ -218,10 +220,10 @@ const pt: Dictionary = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Acompanhe em um só lugar o progresso das pesquisas públicas de jailbreak do PS5 no firmware 14.10 (ZigZagBoi1, pastawithpesto e kuzibelit), com resumos por IA, último commit e links de doação.",
+      "Acompanhe em um só lugar o progresso das pesquisas públicas de jailbreak do PS5 no firmware 14.10 (ZigZagBoi1, pastawithpesto, kuzibelit e zecoxao), com resumos por IA, último commit e links de doação.",
   },
   header: {
-    subtitle: "O progresso das 3 pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
+    subtitle: "O progresso das 4 pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
     lastChecked: "Última verificação",
     language: "Idioma",
     supportSite: "Apoie o site com US$ 1",
@@ -252,6 +254,7 @@ const pt: Dictionary = {
     noCommits: "Sem commits",
     recentCommits: "Commits recentes ({n})",
     xProfile: "{name} no X",
+    ytProfile: "{name} no YouTube",
   },
   progress: {
     title: "Progresso estimado",

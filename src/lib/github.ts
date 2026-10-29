@@ -79,6 +79,19 @@ interface ApiCommit {
   commit: { message: string; committer: { date: string } | null; author: { date: string } | null };
 }
 
+interface ApiGistHistory {
+  version: string;
+  committed_at: string;
+  change_status: { total: number; additions: number; deletions: number };
+}
+
+interface ApiGist {
+  description: string | null;
+  updated_at: string;
+  files: Record<string, { filename: string; content?: string }>;
+  history: ApiGistHistory[];
+}
+
 const COMMIT_MESSAGE_MAX = 300;
 const SHA = /^[0-9a-f]{40}$/;
 
@@ -110,9 +123,45 @@ function describe(e: unknown): string {
   return `GitHub fetch failed: ${e instanceof Error ? e.message : String(e)}`;
 }
 
+const gistUrl = (config: RepoConfig) => `https://gist.github.com/${config.owner}/${config.gistId}`;
+
+async function getGistSnapshot(config: RepoConfig): Promise<RepoSnapshot> {
+  const url = gistUrl(config);
+  try {
+    const gist = JSON.parse(await gh(`/gists/${config.gistId}`)) as ApiGist;
+    const content = Object.values(gist.files)[0]?.content ?? null;
+    const recentCommits: CommitInfo[] = (gist.history ?? []).slice(0, 5).map((h) => ({
+      sha: h.version,
+      message: `+${h.change_status.additions} −${h.change_status.deletions}`,
+      date: h.committed_at,
+      url: `${url}/${h.version}`,
+    }));
+    cacheLife({ stale: 300, revalidate: 600, expire: 86400 });
+    const snapshot: RepoSnapshot = {
+      config,
+      htmlUrl: url,
+      description: gist.description,
+      stars: 0,
+      pushedAt: gist.updated_at,
+      lastCommit: recentCommits[0] ?? null,
+      recentCommits,
+      readme: content ? content.slice(0, README_MAX) : null,
+    };
+    await writeStore(lastGoodKey(config.id), snapshot);
+    return snapshot;
+  } catch (e) {
+    cacheLife({ stale: 60, revalidate: 60, expire: 300 });
+    const lastGood = await readStore<RepoSnapshot>(lastGoodKey(config.id));
+    if (lastGood?.lastCommit) return { ...lastGood, config, htmlUrl: url, error: describe(e) };
+    return { config, htmlUrl: url, description: null, stars: 0, pushedAt: null, lastCommit: null, recentCommits: [], readme: null, error: describe(e) };
+  }
+}
+
 export async function getRepoSnapshot(config: RepoConfig): Promise<RepoSnapshot> {
   "use cache";
   cacheTag("github", `github:${config.id}`);
+
+  if (config.gistId) return getGistSnapshot(config);
 
   const base = `/repos/${config.owner}/${config.repo}`;
   try {

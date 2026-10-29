@@ -12,7 +12,7 @@ import styles from "./RepoCard.module.css";
 const githubUrl = (url: string, fallback: string) => {
   try {
     const u = new URL(url);
-    return u.protocol === "https:" && u.hostname === "github.com" ? u.href : fallback;
+    return u.protocol === "https:" && (u.hostname === "github.com" || u.hostname === "gist.github.com") ? u.href : fallback;
   } catch {
     return fallback;
   }
@@ -29,10 +29,13 @@ export default function RepoCard({ repo, locale, dict }: Props) {
   const t = dict.card;
   const starsFmt = new Intl.NumberFormat(INTL_TAG[locale], { notation: "compact" });
   const { config, summary } = repo;
-  const slug = `${config.owner}/${config.repo}`;
+  const isGist = !!config.gistId;
+  const slug = isGist ? `${config.owner} · Gist` : `${config.owner}/${config.repo}`;
   const titleId = `repo-${config.id}`;
   const commits = repo.recentCommits.slice(0, 3);
-  const repoUrl = `https://github.com/${config.owner}/${config.repo}`;
+  const repoUrl = isGist
+    ? `https://gist.github.com/${config.owner}/${config.gistId}`
+    : `https://github.com/${config.owner}/${config.repo}`;
 
   return (
     <article className={`px-box ${styles.card}`} data-status={summary.status} aria-labelledby={titleId}>
@@ -60,10 +63,23 @@ export default function RepoCard({ repo, locale, dict }: Props) {
           >
             <span aria-hidden="true">𝕏</span> @{config.x}
           </a>
-          <span className={styles.stars} title={`${repo.stars} ${t.stars}`}>
-            <span aria-hidden="true">★</span> {starsFmt.format(repo.stars)}
-            <span className="sr-only"> {t.stars}</span>
-          </span>
+          {config.youtube && (
+            <a
+              className={styles.xLink}
+              href={`https://www.youtube.com/@${config.youtube}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${fill(t.ytProfile, { name: config.nickname })} ${t.newTab}`}
+            >
+              <span aria-hidden="true">▶</span> @{config.youtube}
+            </a>
+          )}
+          {repo.stars > 0 && (
+            <span className={styles.stars} title={`${repo.stars} ${t.stars}`}>
+              <span aria-hidden="true">★</span> {starsFmt.format(repo.stars)}
+              <span className="sr-only"> {t.stars}</span>
+            </span>
+          )}
         </div>
         <DonateLinks
           nickname={config.nickname}

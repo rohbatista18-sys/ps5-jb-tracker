@@ -227,7 +227,7 @@ function toRepoInput(s: RepoSnapshot): RepoInput {
   return {
     id: s.config.id,
     sha: s.lastCommit?.sha ?? null,
-    name: `${s.config.owner}/${s.config.repo}`,
+    name: s.config.gistId ? `${s.config.owner} (Gist)` : `${s.config.owner}/${s.config.repo}`,
     description: s.description?.slice(0, DESCRIPTION_MAX) ?? null,
     pushedAt: s.pushedAt,
     commits: (s.recentCommits.length ? s.recentCommits : s.lastCommit ? [s.lastCommit] : [])
