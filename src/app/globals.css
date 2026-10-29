@@ -22,7 +22,6 @@
 
   --px: 4px;
   --gutter: 16px;
-  --stage-h: 132px; /* top strip where the visitor sprites walk */
   --radius: 0;
 
   /* 4px-based spacing scale (multiples of the pixel unit) */
@@ -54,14 +53,7 @@ html {
   scroll-behavior: smooth;
 }
 
-@media (max-width: 639px) {
-  :root {
-    --stage-h: 104px;
-  }
-}
-
 body {
-  padding-top: calc(var(--stage-h) + 4px);
   min-height: 100dvh;
   overflow-x: hidden;
   background:

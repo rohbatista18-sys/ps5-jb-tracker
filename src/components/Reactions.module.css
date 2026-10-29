@@ -79,7 +79,7 @@
   justify-content: flex-start;
   gap: 10px;
   padding: 8px 10px;
-  background: linear-gradient(90deg, rgb(0 156 59 / 0.22), rgb(255 223 0 / 0.12));
+  background: linear-gradient(90deg, rgb(0 156 59 / 0.22), rgb(255 223 0 / 0.12)), var(--bg-deep);
   box-shadow: 0 0 0 2px #009c3b, 0 0 0 4px var(--bg-deep), 0 0 0 6px #ffdf00;
 }
 

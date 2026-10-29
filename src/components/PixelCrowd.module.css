@@ -1,12 +1,13 @@
+/* Full-viewport pixel scenery behind the page (.page is z-index 1; CRT overlay is 50).
+   100lvh so mobile toolbars collapsing don't resize it (and regenerate the scene) mid-scroll. */
 .canvas {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 0;
+  display: block;
   width: 100%;
-  height: var(--stage-h);
-  border-bottom: 4px solid var(--line, #2a2a52);
-  background: linear-gradient(to top, rgb(0 112 209 / 0.16), transparent 70%);
+  height: 100lvh;
   pointer-events: none;
   image-rendering: pixelated;
 }

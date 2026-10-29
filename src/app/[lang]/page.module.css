@@ -175,7 +175,7 @@
   line-height: 1.3;
   color: var(--ink-dim);
   text-align: center;
-  background: rgb(6 6 12 / 0.85);
+  background: rgb(6 6 12 / 0.94); /* the pixel scenery runs behind it */
   border-top: var(--px) dashed var(--line);
 }
 
