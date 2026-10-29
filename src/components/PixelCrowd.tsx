@@ -4,7 +4,8 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { getVisitorId, usePresence } from "@/hooks/usePresence";
 import { useLiveSalves } from "@/hooks/useLiveSalves";
 import { EMOTE_EVENT, REACTIONS, type EmoteDetail } from "@/lib/reactions-config";
-import { SPRITES, SPRITE_HEIGHT, rasterize, rasterizeFlagBR, rasterizeLabel } from "./sprites";
+import { SPRITES, SPRITE_HEIGHT, rasterize, rasterizeLabel } from "./sprites";
+import { FLAGS, isFlagKey, rasterizeFlag } from "./flags";
 import { DEPTH_ALPHA, DEPTH_SCALE, createScenery, type Platform, type Scenery } from "./scenery";
 import styles from "./PixelCrowd.module.css";
 
@@ -161,6 +162,12 @@ function rasterizeLedge(): { back: HTMLCanvasElement; front: HTMLCanvasElement }
   return { back, front };
 }
 
+// Emoji -> pixel flag canvas, for the reactions that are flags.
+const flagFor = (emoji: string) => {
+  const r = REACTIONS.find((x) => x.emoji === emoji);
+  return r && isFlagKey(r.key) && r.key in FLAGS ? rasterizeFlag(r.key) : null;
+};
+
 export function createCrowd(
   canvas: HTMLCanvasElement,
   overlay: HTMLCanvasElement,
@@ -173,7 +180,6 @@ export function createCrowd(
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const cache: (HTMLCanvasElement | undefined)[] = [];
   const label = rasterizeLabel(selfLabel, "#ffd166");
-  const flagBR = rasterizeFlagBR();
   const ledge = rasterizeLedge();
   const actors: Actor[] = [];
   const order: Actor[] = [];
@@ -593,11 +599,12 @@ export function createCrowd(
       c.save();
       c.translate(ex, ey);
       c.scale(scale, scale);
-      if (e.emoji === "🇧🇷") {
+      const flag = flagFor(e.emoji);
+      if (flag) {
         const cell = Math.max(1, Math.round(p / 2));
-        const fw = flagBR.width * cell;
-        const fh = flagBR.height * cell;
-        c.drawImage(flagBR, -fw / 2, -fh, fw, fh);
+        const fw = flag.width * cell;
+        const fh = flag.height * cell;
+        c.drawImage(flag, -fw / 2, -fh, fw, fh);
       } else c.fillText(e.emoji, 0, 0);
       c.restore();
       if (e.shout) drawShout(s, e, e.shout, ex, ey - size / 2, (size * scale) / 2);

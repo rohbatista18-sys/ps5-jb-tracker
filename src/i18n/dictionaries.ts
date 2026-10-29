@@ -54,7 +54,7 @@ const en = {
     remaining: "{n} of {max} salves left this hour",
     quotaReached: "You've used all {max} salves for this hour. The buttons unlock again at {time}.",
     sent: "Sent “{name}” to {dev}!",
-    names: { heart: "Love", clap: "Applause", rocket: "Let's go", fire: "On fire", muscle: "Strength", pray: "Thank you", party: "Celebrate", trophy: "Champion", brazil: "Brazilian girls" },
+    names: { heart: "Love", clap: "Applause", rocket: "Let's go", fire: "On fire", muscle: "Strength", pray: "Thank you", party: "Celebrate", trophy: "Champion", us: "USA", cn: "China", de: "Germany", jp: "Japan", in: "India", gb: "United Kingdom", fr: "France", it: "Italy", brazil: "Brazilian girls" },
   },
   news: {
     title: "News",
@@ -154,7 +154,7 @@ const es: Dictionary = {
     remaining: "Te quedan {n} de {max} salves esta hora",
     quotaReached: "Ya usaste tus {max} salves de esta hora. Los botones se reactivan a las {time}.",
     sent: "¡Le mandaste «{name}» a {dev}!",
-    names: { heart: "Amor", clap: "Aplausos", rocket: "¡Vamos!", fire: "En llamas", muscle: "Fuerza", pray: "Gracias", party: "Celebrar", trophy: "Campeón", brazil: "Chicas brasileñas" },
+    names: { heart: "Amor", clap: "Aplausos", rocket: "¡Vamos!", fire: "En llamas", muscle: "Fuerza", pray: "Gracias", party: "Celebrar", trophy: "Campeón", us: "EE. UU.", cn: "China", de: "Alemania", jp: "Japón", in: "India", gb: "Reino Unido", fr: "Francia", it: "Italia", brazil: "Chicas brasileñas" },
   },
   news: {
     title: "Noticias",
@@ -252,7 +252,7 @@ const pt: Dictionary = {
     remaining: "Restam {n} de {max} salves nesta hora",
     quotaReached: "Você já usou seus {max} salves desta hora. Os botões voltam a funcionar às {time}.",
     sent: "Você mandou “{name}” para {dev}!",
-    names: { heart: "Amor", clap: "Aplausos", rocket: "Bora!", fire: "Pegando fogo", muscle: "Força", pray: "Obrigado", party: "Comemorar", trophy: "Campeão", brazil: "Garotas Brazileiras" },
+    names: { heart: "Amor", clap: "Aplausos", rocket: "Bora!", fire: "Pegando fogo", muscle: "Força", pray: "Obrigado", party: "Comemorar", trophy: "Campeão", us: "EUA", cn: "China", de: "Alemanha", jp: "Japão", in: "Índia", gb: "Reino Unido", fr: "França", it: "Itália", brazil: "Garotas Brazileiras" },
   },
   news: {
     title: "Notícias",

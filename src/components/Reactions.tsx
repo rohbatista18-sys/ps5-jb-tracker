@@ -3,7 +3,8 @@
 import { useRef, useState } from "react";
 import { EMOTE_EVENT, REACTION_QUOTA, reactionsFor, type EmoteDetail, type Reaction, type ReactionKey } from "@/lib/reactions-config";
 import { sendReaction, useReactionQuota, useReactions, type SendResult } from "@/hooks/useReactions";
-import FlagBR from "./FlagBR";
+import PixelFlag from "./PixelFlag";
+import { isFlagKey } from "./flags";
 import styles from "./Reactions.module.css";
 
 // Local copy of the dictionary `fill` helper, so this client component doesn't bundle every dictionary.
@@ -32,7 +33,8 @@ interface Burst {
   x: number;
 }
 
-const Glyph = ({ r, size }: { r: Reaction; size?: number }) => (r.key === "brazil" ? <FlagBR size={size} /> : r.emoji);
+const Glyph = ({ r, size }: { r: Reaction; size?: number }) =>
+  isFlagKey(r.key) ? <PixelFlag flag={r.key} size={size} /> : r.emoji;
 
 export default function Reactions({ repo, nickname, locale, text }: Props) {
   const counts = useReactions(repo);
@@ -100,7 +102,7 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
               onClick={(e) => react(r, e.currentTarget)}
             >
               <span className={styles.emoji} aria-hidden="true">
-                {r.emoji}
+                <Glyph r={r} />
               </span>
               <span className={styles.count}>{count(r)}</span>
             </button>

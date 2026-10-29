@@ -16,6 +16,15 @@ export const REACTIONS = [
   { key: "pray", emoji: "🙏" },
   { key: "party", emoji: "🎉" },
   { key: "trophy", emoji: "🏆" },
+  // Flags of the 8 largest economies; drawn as pixel art (see components/flags.ts).
+  { key: "us", emoji: "🇺🇸" },
+  { key: "cn", emoji: "🇨🇳" },
+  { key: "de", emoji: "🇩🇪" },
+  { key: "jp", emoji: "🇯🇵" },
+  { key: "in", emoji: "🇮🇳" },
+  { key: "gb", emoji: "🇬🇧" },
+  { key: "fr", emoji: "🇫🇷" },
+  { key: "it", emoji: "🇮🇹" },
   { key: "brazil", emoji: "🇧🇷", only: "pasta", shout: "Garotas Brazileiras <3" },
 ] as const satisfies readonly ReactionDef[];
 
@@ -31,7 +40,10 @@ export const REACTION_QUOTA = 3;
  * over-quota Upstash database). Added on top of the stored counts for display only; replace with
  * the real totals once Upstash can be read again.
  */
-export const reactionBaseline = (key: ReactionKey) => (key === "brazil" ? 1000 : 500);
+export const reactionBaseline = (key: ReactionKey) => (key === "brazil" ? 1000 : NEW_FLAGS.has(key) ? 0 : 500);
+
+// Added later than the baselines above, so they start from their real count.
+const NEW_FLAGS = new Set<string>(["us", "cn", "de", "jp", "in", "gb", "fr", "it"]);
 
 /** Window event fired on a reaction click; PixelCrowd shows the emoji (and shout) above the visitor's own sprite. */
 export const EMOTE_EVENT = "ps5jb:emote";

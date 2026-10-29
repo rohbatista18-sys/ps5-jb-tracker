@@ -279,33 +279,3 @@ export function rasterizeLabel(text: string, color: string): HTMLCanvasElement {
   );
   return canvas;
 }
-
-// 14x10 pixel Brazil flag (G green, Y yellow, B blue, W white band), drawn instead of the 🇧🇷 emoji,
-// which Windows renders as the letters "BR".
-export const FLAG_BR = [
-  "GGGGGGYYGGGGGG",
-  "GGGGYYYYYYGGGG",
-  "GGYYYYBBYYYYGG",
-  "GYYYYBBBBYYYYG",
-  "YYYYBWWWWBYYYY",
-  "YYYYWBBBBWYYYY",
-  "GYYYYBBBBYYYYG",
-  "GGYYYYBBYYYYGG",
-  "GGGGYYYYYYGGGG",
-  "GGGGGGYYGGGGGG",
-];
-export const FLAG_COLORS: Record<string, string> = { G: "#009c3b", Y: "#ffdf00", B: "#002776", W: "#ffffff" };
-
-export function rasterizeFlagBR(): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
-  canvas.width = FLAG_BR[0].length;
-  canvas.height = FLAG_BR.length;
-  const ctx = canvas.getContext("2d")!;
-  FLAG_BR.forEach((row, y) =>
-    [...row].forEach((c, x) => {
-      ctx.fillStyle = FLAG_COLORS[c];
-      ctx.fillRect(x, y, 1, 1);
-    }),
-  );
-  return canvas;
-}
