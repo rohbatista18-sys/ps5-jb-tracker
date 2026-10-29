@@ -37,6 +37,41 @@
   justify-content: center;
 }
 
+/* Site donation: fixed in the free top-right corner so it stays visible while scrolling (the HUD
+   and the own sprite take the bottom corners); yellow, apart from the cyan modal buttons. */
+.support {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  z-index: 30;
+  --pb: var(--yellow);
+  --btn-bg: var(--bg-deep);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  color: var(--yellow);
+  text-transform: uppercase;
+}
+
+@media (max-width: 639px) {
+  .support {
+    padding: 8px 10px;
+    font-size: 0.625rem;
+  }
+
+  /* Clear the fixed support button so it never covers the language switcher. */
+  .page {
+    padding-top: 72px;
+  }
+}
+
+.support > span[aria-hidden] {
+  color: var(--magenta);
+}
+
 .buttons {
   display: flex;
   align-items: center;

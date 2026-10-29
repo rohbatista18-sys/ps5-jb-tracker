@@ -13,6 +13,7 @@ import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
 
 const SITE_SOURCE_URL = "https://github.com/rohbatista18-sys/ps5-jb-tracker";
+const SITE_SUPPORT_URL = "https://www.paypal.com/ncp/payment/6R8Q5LX8RY2CQ";
 
 async function LastChecked({ locale }: { locale: Locale }) {
   const { fetchedAt } = await getDashboard();
@@ -74,6 +75,17 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
           </Suspense>{" "}
           <MoreRepos locale={lang} dict={dict.moreRepos} newTab={dict.card.newTab} />
+          <a
+            href={SITE_SUPPORT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`px-btn ${styles.support}`}
+            title={dict.header.supportSiteHint}
+          >
+            <span aria-hidden="true">♥ </span>
+            {dict.header.supportSite}
+            <span className="sr-only"> — {dict.header.supportSiteHint} {dict.card.newTab}</span>
+          </a>
         </div>
       </header>
 
