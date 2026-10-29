@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { notFound } from "next/navigation";
 import { Press_Start_2P, VT323 } from "next/font/google";
 import PixelCrowd from "@/components/PixelCrowd";
@@ -66,6 +67,14 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
 
   return (
     <html lang={INTL_TAG[lang]} className={`${pixel.variable} ${body.variable}`}>
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3538016597891395"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body>
         <PixelCrowd onlineLabel={presence.online} youLabel={presence.you} visitsLabel={presence.visits} visitsShortLabel={presence.visitsShort} />
         {children}
