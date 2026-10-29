@@ -12,17 +12,22 @@ const realtimeHosts = supabaseHost ? ` https://${supabaseHost} wss://${supabaseH
 // Hashes aren't viable either: the inline `self.__next_f.push(...)` scripts carry the RSC
 // payload (summaries, commit messages), so they change on every data refresh, and
 // `experimental.sri` only covers external chunks.
+// Google AdSense: the loader script plus the hosts it pulls ads, frames and pings from.
+const adsHosts =
+  " https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net" +
+  " https://*.google.com https://*.adtrafficquality.google https://*.gstatic.com";
+
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}${adsHosts}`,
   // React never emits inline event-handler attributes, so block them outright.
   "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:",
+  "img-src 'self' data: https:",
   "font-src 'self'",
-  `connect-src 'self'${realtimeHosts}${isDev ? " ws: wss:" : ""}`,
+  `connect-src 'self'${realtimeHosts}${adsHosts}${isDev ? " ws: wss:" : ""}`,
   "object-src 'none'",
-  "frame-src 'none'",
+  `frame-src${adsHosts}`,
   "worker-src 'none'",
   "media-src 'none'",
   "manifest-src 'self'",
