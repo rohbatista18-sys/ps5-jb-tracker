@@ -13,6 +13,29 @@ const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f
 
 let memoryId: string | null = null;
 
+const RELOAD_KEY = "ps5jb:reloaded-for";
+let reloadPending = false;
+
+// A new deploy went live: reload once per build (the sessionStorage mark prevents loops if a
+// stale copy is ever served again), but never while a dialog is open or the tab is hidden.
+function reloadForNewBuild(build: string) {
+  if (reloadPending) return;
+  try {
+    if (sessionStorage.getItem(RELOAD_KEY) === build) return;
+    sessionStorage.setItem(RELOAD_KEY, build);
+  } catch {
+    return;
+  }
+  reloadPending = true;
+  const attempt = () => {
+    if (document.hidden) return document.addEventListener("visibilitychange", attempt, { once: true });
+    const open = document.querySelector("dialog[open]");
+    if (open) return open.addEventListener("close", attempt, { once: true });
+    location.reload();
+  };
+  attempt();
+}
+
 function uuidV4(): string {
   if (typeof crypto.randomUUID === "function") return crypto.randomUUID().toLowerCase();
   const b = crypto.getRandomValues(new Uint8Array(16));
@@ -84,6 +107,7 @@ export function usePresence(): { online: number | null; visits: number | null } 
         if (typeof data.visits === "number" && Number.isFinite(data.visits)) {
           setVisits(Math.max(0, Math.floor(data.visits)));
         }
+        if (typeof data.build === "string" && data.build !== process.env.BUILD_ID) reloadForNewBuild(data.build);
         failures = 0;
         schedule(HEARTBEAT_MS);
       } catch (err) {

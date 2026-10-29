@@ -11,7 +11,8 @@ const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f
 const NO_STORE = { "Cache-Control": "no-store" };
 
 function json(body: PresenceResponse | { error: string }, status = 200, extra: HeadersInit = {}) {
-  return Response.json(body, { status, headers: { ...NO_STORE, ...extra } });
+  const payload = "error" in body ? body : { ...body, build: process.env.BUILD_ID };
+  return Response.json(payload, { status, headers: { ...NO_STORE, ...extra } });
 }
 
 type Parsed = { id: string; leave: boolean; view: boolean } | { error: string; status: number };

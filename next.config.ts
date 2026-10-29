@@ -50,6 +50,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Baked into both the server and client bundles, so open tabs can tell a new deploy went live.
+  env: { BUILD_ID: process.env.VERCEL_DEPLOYMENT_ID ?? `local-${Date.now()}` },
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,

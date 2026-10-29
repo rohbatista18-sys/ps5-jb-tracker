@@ -73,4 +73,5 @@ export interface DashboardData {
 export interface PresenceResponse {
   online: number;
   visits: number; // all-time page views (baseline + one per page load; no identifier stored)
+  build?: string;
 }
