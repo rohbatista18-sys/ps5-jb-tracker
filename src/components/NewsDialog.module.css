@@ -1,0 +1,76 @@
+.open {
+  --pb: var(--cyan);
+  --btn-bg: var(--panel);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+.open:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.count {
+  min-width: 22px;
+  padding: 3px 5px 2px;
+  font-size: 0.625rem;
+  color: var(--bg-deep);
+  background: var(--yellow);
+  text-align: center;
+}
+
+.dialog {
+  width: min(1100px, calc(100vw - 24px));
+  max-height: calc(100dvh - 48px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  overscroll-behavior: contain;
+}
+
+.dialog::backdrop {
+  background: rgb(6 6 12 / 0.82);
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.close {
+  --pb: var(--magenta);
+  --btn-bg: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  align-self: flex-end;
+  padding: 8px 12px;
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  color: var(--ink);
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialog[open] {
+    animation: pop 160ms ease-out;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}

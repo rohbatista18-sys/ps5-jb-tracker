@@ -57,6 +57,7 @@ const en = {
   },
   news: {
     title: "News",
+    close: "Close",
     subtitle: "From Google News · last 60 days",
     empty: "No news found right now.",
     disclaimer: "Third-party links, not verified by this site. Never download anything that promises a free jailbreak.",
@@ -150,6 +151,7 @@ const es: Dictionary = {
   },
   news: {
     title: "Noticias",
+    close: "Cerrar",
     subtitle: "De Google Noticias · últimos 60 días",
     empty: "No se encontraron noticias por ahora.",
     disclaimer: "Enlaces de terceros, no verificados por este sitio. Nunca descargues nada que prometa un jailbreak gratis.",
@@ -241,6 +243,7 @@ const pt: Dictionary = {
   },
   news: {
     title: "Notícias",
+    close: "Fechar",
     subtitle: "Do Google Notícias · últimos 60 dias",
     empty: "Nenhuma notícia encontrada no momento.",
     disclaimer: "Links de terceiros, não verificados por este site. Nunca baixe nada que prometa jailbreak grátis.",

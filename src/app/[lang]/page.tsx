@@ -66,14 +66,14 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <LastChecked locale={lang} />
           </Suspense>
         </p>
+        <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
+          <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
+        </Suspense>
       </header>
 
       <main className={styles.main}>
         <Suspense fallback={<DashboardSkeleton dict={dict} />}>
           <Dashboard locale={lang} dict={dict} />
-        </Suspense>
-        <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
-          <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
         </Suspense>
       </main>
 

@@ -4,7 +4,8 @@
   flex-direction: column;
   gap: 14px;
   padding: 18px 16px 16px;
-  background: var(--panel);
+  text-align: left; /* the dialog lives inside the centered page header */
+  background: var(--panel-solid);
 }
 
 .head {
