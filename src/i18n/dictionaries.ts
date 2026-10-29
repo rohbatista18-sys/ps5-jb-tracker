@@ -55,6 +55,12 @@ const en = {
     quotaReached: "You have used your {max} salves for this hour. More at {time}!",
     names: { heart: "Love", clap: "Applause", rocket: "Let's go", fire: "On fire", muscle: "Strength", pray: "Thank you", party: "Celebrate", trophy: "Champion", brazil: "Brazilian girls" },
   },
+  news: {
+    title: "News",
+    subtitle: "From Google News · last 60 days",
+    empty: "No news found right now.",
+    disclaimer: "Third-party links, not verified by this site. Never download anything that promises a free jailbreak.",
+  },
   overall: { title: "Overall summary", generatedAt: "Generated", loading: "Loading" },
   donate: {
     support: "Support",
@@ -142,6 +148,12 @@ const es: Dictionary = {
     quotaReached: "Ya usaste tus {max} salves de esta hora. ¡Más a las {time}!",
     names: { heart: "Amor", clap: "Aplausos", rocket: "¡Vamos!", fire: "En llamas", muscle: "Fuerza", pray: "Gracias", party: "Celebrar", trophy: "Campeón", brazil: "Chicas brasileñas" },
   },
+  news: {
+    title: "Noticias",
+    subtitle: "De Google Noticias · últimos 60 días",
+    empty: "No se encontraron noticias por ahora.",
+    disclaimer: "Enlaces de terceros, no verificados por este sitio. Nunca descargues nada que prometa un jailbreak gratis.",
+  },
   overall: { title: "Resumen general", generatedAt: "Generado", loading: "Cargando" },
   donate: {
     support: "Apoya",
@@ -226,6 +238,12 @@ const pt: Dictionary = {
     remaining: "Restam {n} de {max} salves nesta hora",
     quotaReached: "Você já usou seus {max} salves desta hora. Mais às {time}!",
     names: { heart: "Amor", clap: "Aplausos", rocket: "Bora!", fire: "Pegando fogo", muscle: "Força", pray: "Obrigado", party: "Comemorar", trophy: "Campeão", brazil: "Garotas Brazileiras" },
+  },
+  news: {
+    title: "Notícias",
+    subtitle: "Do Google Notícias · últimos 60 dias",
+    empty: "Nenhuma notícia encontrada no momento.",
+    disclaimer: "Links de terceiros, não verificados por este site. Nunca baixe nada que prometa jailbreak grátis.",
   },
   overall: { title: "Resumo geral", generatedAt: "Gerado em", loading: "Carregando" },
   donate: {
