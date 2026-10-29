@@ -5,55 +5,47 @@ export interface ExtraRepo {
   description: { en: string; es: string; pt: string };
 }
 
+// Checked 2026-10-29 via the GitHub API: each repo exists and its README targets FW 14.10.
+// Left out on purpose: single-file "jailbreak" pages, untested one-click PC hosts, empty skeletons.
 export const EXTRA_REPOS: ExtraRepo[] = [
   {
-    owner: "ntfargo",
-    repo: "Relapse-Exploit",
-    firmware: "7.00–13.60",
+    owner: "ftrevino739-ctrl",
+    repo: "PS5-14.10-JB",
+    firmware: "14.10",
     description: {
-      en: "WebKit + kernel exploit chain (Relapse)",
-      es: "Cadena de exploit WebKit + kernel (Relapse)",
-      pt: "Cadeia de exploit WebKit + kernel (Relapse)",
+      en: "WebKit research with probes run on a real 14.10 console",
+      es: "Investigación de WebKit con pruebas en una consola 14.10 real",
+      pt: "Pesquisa de WebKit com testes num console 14.10 real",
     },
   },
   {
-    owner: "Cryptogenic",
-    repo: "PS5-IPV6-Kernel-Exploit",
-    firmware: "≤ 4.51",
+    owner: "stark3y93",
+    repo: "PS5-FW-14.10-Research",
+    firmware: "14.10",
     description: {
-      en: "IPv6 UAF kernel exploit (foundational research)",
-      es: "Exploit de kernel IPv6 UAF (investigación base)",
-      pt: "Exploit de kernel IPv6 UAF (pesquisa base)",
+      en: "Update-package tools plus reports on public 14.10 claims",
+      es: "Herramientas de paquetes de actualización e informes sobre lo publicado del 14.10",
+      pt: "Ferramentas de pacote de atualização e relatórios sobre o que já saiu do 14.10",
     },
   },
   {
-    owner: "DuskFal1",
-    repo: "p2jb",
-    firmware: "11.00–12.00",
+    owner: "Kickazzman",
+    repo: "ps5-1410-research",
+    firmware: "14.10",
     description: {
-      en: "JavaScript kernel exploit (P2JB bug by Gezine)",
-      es: "Exploit de kernel en JavaScript (bug P2JB de Gezine)",
-      pt: "Exploit de kernel em JavaScript (bug P2JB do Gezine)",
+      en: "Stage 1 notes and an audit of the numbers circulating publicly",
+      es: "Notas de la etapa 1 y una auditoría de los números que circulan",
+      pt: "Notas do estágio 1 e auditoria dos números que circulam por aí",
     },
   },
   {
-    owner: "PlGGS",
-    repo: "umtx2",
-    firmware: "1.00–5.50",
+    owner: "oniz93",
+    repo: "ps5-14.10-research",
+    firmware: "14.10",
     description: {
-      en: "UMTX jailbreak (WebKit-based)",
-      es: "Jailbreak UMTX (basado en WebKit)",
-      pt: "Jailbreak UMTX (baseado em WebKit)",
-    },
-  },
-  {
-    owner: "Starter1552",
-    repo: "PS5-Relapse",
-    firmware: "7.00–13.60",
-    description: {
-      en: "Relapse exploit host (self-host alternative)",
-      es: "Host del exploit Relapse (alternativa auto-alojada)",
-      pt: "Host do exploit Relapse (alternativa auto-hospedada)",
+      en: "Boot-chain reverse engineering (early, software-only)",
+      es: "Ingeniería inversa de la cadena de arranque (inicial, solo software)",
+      pt: "Engenharia reversa da cadeia de boot (inicial, só software)",
     },
   },
 ];

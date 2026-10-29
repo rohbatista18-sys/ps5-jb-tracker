@@ -65,8 +65,8 @@ const en = {
   moreRepos: {
     title: "More repos",
     close: "Close",
-    subtitle: "Other public PS5 jailbreak / exploit repositories",
-    disclaimer: "These repositories may cover older firmware. They are listed for reference and research only.",
+    subtitle: "Other public repositories researching PS5 firmware 14.10",
+    disclaimer: "Not affiliated with this site and not verified by it. None of them is a working jailbreak. Never run anything that promises one.",
   },
   overall: { title: "Overall summary", generatedAt: "Generated", loading: "Loading" },
   donate: {
@@ -165,8 +165,8 @@ const es: Dictionary = {
   moreRepos: {
     title: "Más repos",
     close: "Cerrar",
-    subtitle: "Otros repositorios públicos de jailbreak / exploit de PS5",
-    disclaimer: "Estos repositorios pueden cubrir firmware más antiguo. Se listan solo como referencia e investigación.",
+    subtitle: "Otros repositorios públicos que investigan el firmware 14.10 del PS5",
+    disclaimer: "Sin afiliación con este sitio y no verificados por él. Ninguno es un jailbreak funcional. Nunca ejecutes nada que prometa uno.",
   },
   overall: { title: "Resumen general", generatedAt: "Generado", loading: "Cargando" },
   donate: {
@@ -263,8 +263,8 @@ const pt: Dictionary = {
   moreRepos: {
     title: "Mais repos",
     close: "Fechar",
-    subtitle: "Outros repositórios públicos de jailbreak / exploit de PS5",
-    disclaimer: "Estes repositórios podem cobrir firmware mais antigo. Listados apenas como referência e pesquisa.",
+    subtitle: "Outros repositórios públicos pesquisando o firmware 14.10 do PS5",
+    disclaimer: "Sem afiliação com este site e não verificados por ele. Nenhum é um jailbreak funcional. Nunca rode nada que prometa um.",
   },
   overall: { title: "Resumo geral", generatedAt: "Gerado em", loading: "Carregando" },
   donate: {
