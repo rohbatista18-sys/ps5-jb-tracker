@@ -19,6 +19,7 @@ const en = {
     link: "Open the guide",
     close: "Close notice",
   },
+  bigNotice: { title: "Something big is coming!", subtitle: "Stay tuned!!" },
   loading: "Loading repository data",
   status: {
     early: "Early",
@@ -127,6 +128,7 @@ const es: Dictionary = {
     link: "Abrir la guía",
     close: "Cerrar aviso",
   },
+  bigNotice: { title: "¡Algo grande se viene!", subtitle: "¡¡Estén atentos!!" },
   loading: "Cargando datos de los repositorios",
   status: {
     early: "Inicio",
@@ -233,6 +235,7 @@ const pt: Dictionary = {
     link: "Abrir o guia",
     close: "Fechar aviso",
   },
+  bigNotice: { title: "Algo grande está vindo!", subtitle: "Fiquem ligados!!" },
   loading: "Carregando dados dos repositórios",
   status: {
     early: "Início",

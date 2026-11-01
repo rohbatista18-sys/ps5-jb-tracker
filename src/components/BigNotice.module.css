@@ -1,0 +1,46 @@
+.notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 40px 20px;
+  text-align: center;
+  background: var(--panel-solid);
+  box-shadow:
+    0 0 0 4px var(--magenta),
+    0 0 0 8px var(--yellow),
+    8px 8px 0 8px rgb(0 0 0 / 0.55);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
+  line-height: 1.25;
+  color: var(--yellow);
+  text-transform: uppercase;
+  text-shadow: 4px 4px 0 var(--magenta);
+  text-wrap: balance;
+  animation: pulse 1.2s steps(2) infinite;
+}
+
+.subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 3vw, 2rem);
+  color: var(--cyan);
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+@keyframes pulse {
+  50% {
+    color: var(--magenta);
+    text-shadow: 4px 4px 0 var(--yellow);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title {
+    animation: none;
+  }
+}

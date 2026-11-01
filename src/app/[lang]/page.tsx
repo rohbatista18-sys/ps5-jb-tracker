@@ -9,6 +9,7 @@ import PsButtons from "@/components/PsButtons";
 import NewsSection, { NewsSkeleton } from "@/components/NewsSection";
 import MoreRepos from "@/components/MoreRepos";
 import GuideNotice from "@/components/GuideNotice";
+import BigNotice from "@/components/BigNotice";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
@@ -57,6 +58,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   return (
     <div className={styles.page}>
       <GuideNotice dict={dict.guide} newTab={dict.card.newTab} />
+      <BigNotice dict={dict.bigNotice} />
       <header className={styles.header}>
         <LanguageSwitcher current={lang} label={dict.header.language} />
         <PsButtons className={styles.buttons} />
