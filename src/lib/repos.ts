@@ -34,15 +34,4 @@ export const REPOS: RepoConfig[] = [
     donations: [],
     donationNote: "Sem link de doação publicado",
   },
-  {
-    id: "zeco",
-    nickname: "zecoxao",
-    owner: "zecoxao",
-    repo: "80dff057233c1f203352ff8bf317294d",
-    gistId: "80dff057233c1f203352ff8bf317294d",
-    x: "notnotzecoxao",
-    youtube: "ControleXecute",
-    donations: [],
-    donationNote: "Sem link de doação publicado",
-  },
 ];
