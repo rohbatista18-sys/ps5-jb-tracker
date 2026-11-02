@@ -38,14 +38,4 @@ export const EXTRA_REPOS: ExtraRepo[] = [
       pt: "Notas do estágio 1 e auditoria dos números que circulam por aí",
     },
   },
-  {
-    owner: "oniz93",
-    repo: "ps5-14.10-research",
-    firmware: "14.10",
-    description: {
-      en: "Boot-chain reverse engineering (early, software-only)",
-      es: "Ingeniería inversa de la cadena de arranque (inicial, solo software)",
-      pt: "Engenharia reversa da cadeia de boot (inicial, só software)",
-    },
-  },
 ];

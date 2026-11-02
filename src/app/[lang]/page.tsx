@@ -45,6 +45,7 @@ function DashboardSkeleton({ dict }: { dict: Dictionary }) {
         <RepoCardSkeleton />
         <RepoCardSkeleton />
         <RepoCardSkeleton />
+        <RepoCardSkeleton />
       </div>
     </div>
   );

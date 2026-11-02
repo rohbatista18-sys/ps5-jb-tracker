@@ -7,11 +7,11 @@ export interface DonationLink {
 }
 
 export interface RepoConfig {
-  id: "zig" | "pasta" | "kuzi";
+  id: "zig" | "pasta" | "kuzi" | "oniz";
   nickname: string; // same as the GitHub username
   owner: string;
   repo: string;
-  x: string; // X/Twitter handle, without "@"
+  x?: string; // X/Twitter handle, without "@" (absent when the researcher has none we know of)
   donations: DonationLink[];
   donationNote?: string;
 }
@@ -60,8 +60,25 @@ export interface RepoSummary {
   fallback?: boolean; // true when the AI was unavailable
 }
 
+// One row of the stage/milestone table a researcher publishes, copied as plain text.
+export interface AuthorStage {
+  name: string;
+  status: string; // the author's own wording, e.g. "CONFIRMED", "9/10", "Not established"
+  state: StageState; // drives the colour only
+}
+
+// Progress the researcher publishes in their own README (see lib/self-report.ts).
+export interface SelfReport {
+  percent: number; // 0–100
+  kind: "score" | "stages"; // "65/100" score, or confirmed rows out of their stage table
+  done: number;
+  total: number;
+  stages: AuthorStage[] | null;
+}
+
 export interface RepoView extends RepoSnapshot {
   summary: RepoSummary;
+  selfReport: SelfReport | null;
 }
 
 export interface DashboardData {

@@ -15,7 +15,7 @@ import {
   type StageState,
 } from "./types";
 
-export const PROMPT_VERSION = "v4"; // bump to invalidate stored summaries
+export const PROMPT_VERSION = "v5"; // bump to invalidate stored summaries
 
 const README_MAX = 12_000;
 const DESCRIPTION_MAX = 500;
@@ -56,10 +56,11 @@ ${LANG_RULES}
 - "stages": classify each stage of a jailbreak chain ON FIRMWARE 14.10 as "done" (the repo explicitly says it was demonstrated on 14.10), "partial" (the repo reports concrete partial results or active, evidenced work on it) or "none" (not reported, only planned, or only on other firmwares). Be conservative: claims without evidence are "none"; previously known techniques that the repo says are patched/dead on 14.10 are "none". Keys:
   "entry" (code execution in a userland process, e.g. browser/WebKit, Lua, save game),
   "userlandRw" (arbitrary userland memory read/write primitives),
-  "kaslr" (kernel address leak / KASLR bypass),
+  "kaslr" (KERNEL address leak / KASLR bypass; leaks of userland, browser or WebKit heap pointers and userland ASLR bypasses do NOT count),
   "kernelRw" (kernel memory read/write),
   "privesc" (privilege escalation / sandbox escape, i.e. jailbreak),
-  "release" (complete chain publicly released and reproducible).`;
+  "release" (complete chain publicly released and reproducible).
+- A stage is never "partial" just because the repo contains code, a test harness, comments or plans aimed at it; "partial" needs reported results on 14.10. A stage the repo calls designed, planned, blocked, next or not demonstrated is "none".`;
 
 const OVERALL_INSTRUCTIONS = `You write a short overview of the race for a PS5 firmware 14.10 jailbreak, based on summaries of several research repositories.
 

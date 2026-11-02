@@ -34,4 +34,12 @@ export const REPOS: RepoConfig[] = [
     donations: [],
     donationNote: "Sem link de doação publicado",
   },
+  {
+    // Added 2026-11-02 at the site owner's request; Ko-fi provided by the site owner, no X handle on GitHub.
+    id: "oniz",
+    nickname: "oniz93",
+    owner: "oniz93",
+    repo: "ps5-14.10-research",
+    donations: [{ label: "Ko-fi", url: "https://ko-fi.com/dymor" }],
+  },
 ];

@@ -2,6 +2,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { getRepoSnapshot } from "./github";
 import { REPOS } from "./repos";
+import { parseSelfReport } from "./self-report";
 import { summarizeOverall, summarizeRepo } from "./summarize";
 import type { DashboardData, RepoView } from "./types";
 
@@ -12,7 +13,12 @@ export async function getDashboard(): Promise<DashboardData> {
   const snapshots = await Promise.all(REPOS.map((c) => getRepoSnapshot(c)));
   const repos: RepoView[] = await Promise.all(
     // The README is only needed for the prompt; keep it out of the cached dashboard and page props.
-    snapshots.map(async (s) => ({ ...s, readme: null, summary: await summarizeRepo(s) })),
+    snapshots.map(async (s) => ({
+      ...s,
+      readme: null,
+      selfReport: parseSelfReport(s.readme),
+      summary: await summarizeRepo(s),
+    })),
   );
   const overall = await summarizeOverall(repos);
 

@@ -4,10 +4,10 @@ const en = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Track the public PS5 firmware 14.10 jailbreak research (ZigZagBoi1, pastawithpesto and kuzibelit) in one place, with AI summaries, last commit times and donation links.",
+      "Track the public PS5 firmware 14.10 jailbreak research (ZigZagBoi1, pastawithpesto, kuzibelit and oniz93) in one place, with AI summaries, last commit times and donation links.",
   },
   header: {
-    subtitle: "Progress of the 3 public firmware 14.10 jailbreak research projects, in one place.",
+    subtitle: "Progress of the 4 public firmware 14.10 jailbreak research projects, in one place.",
     lastChecked: "Last checked",
     language: "Language",
     supportSite: "Support the site with US$ 1",
@@ -42,6 +42,12 @@ const en = {
   },
   progress: {
     title: "Estimated progress",
+    titleAuthor: "Progress (per the author)",
+    authorScore: "Per the author: {done}/{total}",
+    authorStages: "Per the author: {done} of {total} stages confirmed",
+    noteAuthor: "The percentage is the one the researcher publishes in the repository. The stages below are an AI estimate from what the repository reports.",
+    noteAuthorStages: "The percentage and the stages are the ones the researcher publishes in the repository (copied from the README, in English).",
+    detailsAuthor: "Stages per the author",
     unknown: "Not enough data to estimate progress yet.",
     details: "Chain stages",
     note: "Estimated by AI from what the repository itself reports — not an official percentage.",
@@ -113,10 +119,10 @@ const es: Dictionary = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Sigue en un solo lugar las investigaciones públicas de jailbreak del PS5 en el firmware 14.10 (ZigZagBoi1, pastawithpesto y kuzibelit), con resúmenes por IA, último commit y enlaces de donación.",
+      "Sigue en un solo lugar las investigaciones públicas de jailbreak del PS5 en el firmware 14.10 (ZigZagBoi1, pastawithpesto, kuzibelit y oniz93), con resúmenes por IA, último commit y enlaces de donación.",
   },
   header: {
-    subtitle: "El progreso de las 3 investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
+    subtitle: "El progreso de las 4 investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
     lastChecked: "Última verificación",
     language: "Idioma",
     supportSite: "Apoya el sitio con US$ 1",
@@ -151,6 +157,12 @@ const es: Dictionary = {
   },
   progress: {
     title: "Progreso estimado",
+    titleAuthor: "Progreso (según el autor)",
+    authorScore: "Según el autor: {done}/{total}",
+    authorStages: "Según el autor: {done} de {total} etapas confirmadas",
+    noteAuthor: "El porcentaje es el que el investigador publica en el repositorio. Las etapas de abajo son una estimación por IA a partir de lo que informa el repositorio.",
+    noteAuthorStages: "El porcentaje y las etapas son los que el investigador publica en el repositorio (copiados del README, en inglés).",
+    detailsAuthor: "Etapas según el autor",
     unknown: "Aún no hay datos suficientes para estimar el progreso.",
     details: "Etapas de la cadena",
     note: "Estimado por IA a partir de lo que el propio repositorio informa — no es un porcentaje oficial.",
@@ -220,10 +232,10 @@ const pt: Dictionary = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Acompanhe em um só lugar o progresso das pesquisas públicas de jailbreak do PS5 no firmware 14.10 (ZigZagBoi1, pastawithpesto e kuzibelit), com resumos por IA, último commit e links de doação.",
+      "Acompanhe em um só lugar o progresso das pesquisas públicas de jailbreak do PS5 no firmware 14.10 (ZigZagBoi1, pastawithpesto, kuzibelit e oniz93), com resumos por IA, último commit e links de doação.",
   },
   header: {
-    subtitle: "O progresso das 3 pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
+    subtitle: "O progresso das 4 pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
     lastChecked: "Última verificação",
     language: "Idioma",
     supportSite: "Apoie o site com US$ 1",
@@ -258,6 +270,12 @@ const pt: Dictionary = {
   },
   progress: {
     title: "Progresso estimado",
+    titleAuthor: "Progresso (segundo o autor)",
+    authorScore: "Segundo o autor: {done}/{total}",
+    authorStages: "Segundo o autor: {done} de {total} etapas confirmadas",
+    noteAuthor: "A porcentagem é a que o pesquisador publica no repositório. As etapas abaixo são uma estimativa por IA a partir do que o repositório relata.",
+    noteAuthorStages: "A porcentagem e as etapas são as que o pesquisador publica no repositório (copiadas do README, em inglês).",
+    detailsAuthor: "Etapas segundo o autor",
     unknown: "Ainda não há dados suficientes para estimar o progresso.",
     details: "Etapas da cadeia",
     note: "Estimado por IA a partir do que o próprio repositório relata — não é uma porcentagem oficial.",

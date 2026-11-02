@@ -51,15 +51,17 @@ export default function RepoCard({ repo, locale, dict }: Props) {
           <span className="sr-only"> {t.newTab}</span>
         </a>
         <div className={styles.meta}>
-          <a
-            className={styles.xLink}
-            href={`https://x.com/${config.x}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${fill(t.xProfile, { name: config.nickname })} ${t.newTab}`}
-          >
-            <span aria-hidden="true">𝕏</span> @{config.x}
-          </a>
+          {config.x && (
+            <a
+              className={styles.xLink}
+              href={`https://x.com/${config.x}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${fill(t.xProfile, { name: config.nickname })} ${t.newTab}`}
+            >
+              <span aria-hidden="true">𝕏</span> @{config.x}
+            </a>
+          )}
           <span className={styles.stars} title={`${repo.stars} ${t.stars}`}>
             <span aria-hidden="true">★</span> {starsFmt.format(repo.stars)}
             <span className="sr-only"> {t.stars}</span>
@@ -75,7 +77,11 @@ export default function RepoCard({ repo, locale, dict }: Props) {
       </header>
 
       {/* Card children map 1:1 to the shared subgrid rows: header, progress, summary, updated, commits, reactions. */}
-      <ProgressBar stages={summary.stages} dict={dict.progress} />
+      <ProgressBar
+        stages={summary.stages}
+        selfReport={repo.selfReport}
+        dict={dict.progress}
+      />
 
       <section className={styles.summary} aria-label={t.summary}>
         {repo.error && (

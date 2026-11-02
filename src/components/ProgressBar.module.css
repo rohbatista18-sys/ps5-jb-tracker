@@ -39,6 +39,16 @@
     0 0 0 6px var(--ps-blue);
 }
 
+.fill {
+  background: var(--green);
+  box-shadow: inset 0 -4px 0 rgb(0 0 0 / 0.25), inset 0 4px 0 rgb(255 255 255 / 0.25);
+}
+
+.source {
+  font-size: 1rem;
+  color: var(--ink-dim);
+}
+
 .segment {
   flex-basis: 0;
   background: rgb(255 255 255 / 0.05);
@@ -84,6 +94,18 @@
   grid-template-columns: 10px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
+}
+
+/* The author's own wording can be long: status goes under the name instead of beside it. */
+.authorList li {
+  grid-template-columns: 10px minmax(0, 1fr);
+  row-gap: 0;
+  padding: 2px 0;
+}
+
+.authorList .state {
+  grid-column: 2;
+  white-space: normal;
 }
 
 .dot {
