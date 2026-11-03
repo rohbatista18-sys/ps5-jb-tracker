@@ -10,8 +10,6 @@ const en = {
     subtitle: "Progress of the 4 public firmware 14.10 jailbreak research projects, in one place.",
     lastChecked: "Last checked",
     language: "Language",
-    supportSite: "Support the site with US$ 1",
-    supportSiteHint: "Helps keep this site online. It goes to the site, not to the devs, and does not buy the jailbreak.",
   },
   guide: {
     label: "New",
@@ -106,7 +104,7 @@ const en = {
     source: "This site's source code on GitHub",
     donationWarning:
       "Donations only support the devs' work. They do NOT buy the jailbreak, and no dev will ever ask for donations in exchange for it. Anyone who does is a scammer.",
-    donations: "The donation links on each card go straight to that dev; the site gets nothing from them. The “Support the site” button is separate: it only helps keep this site online and goes to the site, not to the devs.",
+    donations: "The donation links on each card go straight to that dev; the site gets nothing from them.",
     nonprofit: "This is a non-profit site.",
     privacy:
       "Privacy: no accounts, analytics or tracking. The only cookie stores your language. The online counter uses a random, anonymous ID that lives only in this tab and is deleted from our servers within a minute. No IP addresses are stored. Live salves come over a receive-only connection to Supabase, our database provider: it carries only which emoji was sent, never who sent it.",
@@ -125,8 +123,6 @@ const es: Dictionary = {
     subtitle: "El progreso de las 4 investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
     lastChecked: "Última verificación",
     language: "Idioma",
-    supportSite: "Apoya el sitio con US$ 1",
-    supportSiteHint: "Ayuda a mantener este sitio en línea. Va para el sitio, no para los devs, y no compra el jailbreak.",
   },
   guide: {
     label: "Nuevo",
@@ -221,7 +217,7 @@ const es: Dictionary = {
     source: "Código fuente de este sitio en GitHub",
     donationWarning:
       "Las donaciones solo apoyan el trabajo de los devs. NO compran el jailbreak, y ningún dev pedirá donaciones a cambio de él. Quien lo haga es un estafador.",
-    donations: "Los enlaces de donación de cada tarjeta van directo a ese dev; el sitio no recibe nada de ellos. El botón “Apoya el sitio” es aparte: solo ayuda a mantener este sitio en línea y va para el sitio, no para los devs.",
+    donations: "Los enlaces de donación de cada tarjeta van directo a ese dev; el sitio no recibe nada de ellos.",
     nonprofit: "Este sitio no tiene fines de lucro.",
     privacy:
       "Privacidad: sin cuentas, analíticas ni rastreo. La única cookie guarda tu idioma. El contador en línea usa un ID aleatorio y anónimo que solo existe en esta pestaña y se borra de nuestros servidores en menos de un minuto. No guardamos direcciones IP. Los salves en vivo llegan por una conexión de solo lectura con Supabase, nuestro proveedor de base de datos: solo lleva qué emoji se envió, nunca quién lo envió.",
@@ -238,8 +234,6 @@ const pt: Dictionary = {
     subtitle: "O progresso das 4 pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
     lastChecked: "Última verificação",
     language: "Idioma",
-    supportSite: "Apoie o site com US$ 1",
-    supportSiteHint: "Ajuda a manter este site no ar. Vai para o site, não para os devs, e não compra o jailbreak.",
   },
   guide: {
     label: "Novo",
@@ -334,7 +328,7 @@ const pt: Dictionary = {
     source: "Código-fonte deste site no GitHub",
     donationWarning:
       "As doações só apoiam o trabalho dos devs. Elas NÃO compram o jailbreak, e nenhum dev vai pedir doação em troca dele. Quem pedir está aplicando golpe.",
-    donations: "Os links de doação de cada card vão direto para aquele dev; o site não recebe nada deles. O botão “Apoie o site” é separado: só ajuda a manter este site no ar e vai para o site, não para os devs.",
+    donations: "Os links de doação de cada card vão direto para aquele dev; o site não recebe nada deles.",
     nonprofit: "Este site não tem fins lucrativos.",
     privacy:
       "Privacidade: sem contas, analytics ou rastreamento. O único cookie guarda o seu idioma. O contador online usa um ID aleatório e anônimo que existe só nesta aba e é apagado dos nossos servidores em menos de um minuto. Não guardamos endereços IP. Os salves ao vivo chegam por uma conexão só de leitura com o Supabase, nosso provedor de banco de dados: ela leva só qual emoji foi enviado, nunca quem enviou.",
