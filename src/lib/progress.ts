@@ -26,6 +26,7 @@ export interface Progress {
   total: number;
   partial: number;
   rows: ProgressRow[];
+  rowsDone: number; // rows fully done, for "5 of 9 stages complete" and the drawer tab
   next: ProgressRow | null; // first row not done yet
 }
 
@@ -38,15 +39,25 @@ export function progressOf(repo: Pick<RepoView, "selfReport" | "summary">): Prog
       ? STAGES.map((s) => ({ state: aiStages[s.id], weight: s.weight, stage: s.id }))
       : [];
   const next = rows.find((r) => r.state !== "done") ?? null;
+  const rowsDone = rows.filter((r) => r.state === "done").length;
 
   if (selfReport) {
     const { percent, kind, done, total, partial } = selfReport;
-    return { percent, source: "author", kind, done, total, partial, rows, next };
+    return { percent, source: "author", kind, done, total, partial, rows, rowsDone, next };
   }
   if (aiStages) {
-    const done = rows.filter((r) => r.state === "done").length;
     const partial = rows.filter((r) => r.state === "partial").length;
-    return { percent: progressPercent(aiStages), source: "ai", kind: "ai", done, total: rows.length, partial, rows, next };
+    return {
+      percent: progressPercent(aiStages),
+      source: "ai",
+      kind: "ai",
+      done: rowsDone,
+      total: rows.length,
+      partial,
+      rows,
+      rowsDone,
+      next,
+    };
   }
-  return { percent: null, source: null, kind: null, done: 0, total: 0, partial: 0, rows, next: null };
+  return { percent: null, source: null, kind: null, done: 0, total: 0, partial: 0, rows, rowsDone, next: null };
 }

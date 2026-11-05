@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { EMOTE_EVENT, REACTION_QUOTA, reactionsFor, type EmoteDetail, type Reaction, type ReactionKey } from "@/lib/reactions-config";
 import { sendReaction, useReactionQuota, useReactions, type SendResult } from "@/hooks/useReactions";
 import PixelFlag from "./PixelFlag";
+import SectionHead from "./SectionHead";
 import { isFlagKey } from "./flags";
 import styles from "./Reactions.module.css";
 
@@ -51,6 +52,9 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
     : "";
   const nextId = useRef(0);
   const fmt = new Intl.NumberFormat(locale, { notation: "compact" });
+  // Button counts must fit ~36px: "5,1k" instead of the locale's "5,1 mil".
+  const short = new Intl.NumberFormat(locale, { maximumFractionDigits: 1 });
+  const tiny = (n: number) => (n >= 1000 ? `${short.format(n / 1000)}k` : String(n));
   const available = reactionsFor(repo);
   const regular = available.filter((r) => !("only" in r));
   const exclusive = available.filter((r) => "only" in r);
@@ -70,7 +74,7 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
   }
 
   const label = (r: Reaction) => `${text.send} ${text.names[r.key]} — ${nickname}`;
-  const count = (r: Reaction) => (counts ? fmt.format(counts[r.key]) : "·");
+  const count = (r: Reaction) => (counts ? tiny(counts[r.key]) : "·");
 
   const status = outOfQuota
     ? { warn: true, msg: fill(text.quotaReached, { max: REACTION_QUOTA, time: resetTime }) }
@@ -81,13 +85,15 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
         : null;
 
   return (
-    <section className={styles.reactions} aria-label={`${text.title} — ${nickname}`}>
-      <div className={styles.head}>
-        <span className={styles.title}>{text.title}</span>
-        <span className={styles.total}>
-          {total === null ? "…" : fill(text.total, { n: fmt.format(total) })}
-        </span>
-      </div>
+    <section className={styles.reactions} aria-labelledby={`reactions-title-${repo}`}>
+      <SectionHead
+        id={`reactions-title-${repo}`}
+        role="community"
+        aside={total === null ? "…" : fill(text.total, { n: fmt.format(total) })}
+      >
+        {text.title}
+        <span className="sr-only"> — {nickname}</span>
+      </SectionHead>
 
       <ul className={styles.list}>
         {regular.map((r) => (

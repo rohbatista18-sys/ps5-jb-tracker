@@ -1,16 +1,21 @@
 "use client";
 
 import { useId, useRef, useState, type ReactNode } from "react";
+import SectionHead from "./SectionHead";
 import styles from "./CardDrawer.module.css";
 
 export interface DrawerItem {
   key: string;
   label: string;
+  count?: number | string;
   content: ReactNode; // rendered on the server
 }
 
-/** One row of toggle buttons; at most one panel open. Esc inside a panel closes it. */
-export default function CardDrawer({ items, label }: { items: DrawerItem[]; label: string }) {
+/**
+ * "See all": a strip of tabs resting on a baseline; the open tab merges into its panel. They are
+ * disclosures (aria-expanded), not ARIA tabs, since all of them may be closed. Esc closes a panel.
+ */
+export default function CardDrawer({ items, heading }: { items: DrawerItem[]; heading: string }) {
   const [open, setOpen] = useState<string | null>(null);
   const base = useId();
   const buttons = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -18,8 +23,11 @@ export default function CardDrawer({ items, label }: { items: DrawerItem[]; labe
   if (!items.length) return null;
 
   return (
-    <div className={styles.drawer}>
-      <div className={styles.tabs} role="group" aria-label={label}>
+    <section className={styles.drawer} aria-labelledby={`${base}-h`}>
+      <SectionHead id={`${base}-h`} role="neutral">
+        {heading}
+      </SectionHead>
+      <div className={styles.tabs} role="group" aria-labelledby={`${base}-h`}>
         {items.map((it) => (
           <button
             key={it.key}
@@ -32,10 +40,8 @@ export default function CardDrawer({ items, label }: { items: DrawerItem[]; labe
             aria-controls={`${base}-${it.key}`}
             onClick={() => setOpen((o) => (o === it.key ? null : it.key))}
           >
-            <span className={styles.chevron} aria-hidden="true">
-              ▸
-            </span>
             {it.label}
+            {it.count !== undefined && <span className={styles.count}>{it.count}</span>}
           </button>
         ))}
       </div>
@@ -54,6 +60,6 @@ export default function CardDrawer({ items, label }: { items: DrawerItem[]; labe
           {it.content}
         </div>
       ))}
-    </div>
+    </section>
   );
 }

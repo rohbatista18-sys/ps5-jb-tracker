@@ -1,6 +1,7 @@
 import type { DonationLink } from "@/lib/types";
 import { fill, type Dictionary } from "@/i18n/dictionaries";
 import CopyButton from "./CopyButton";
+import SectionHead from "./SectionHead";
 import styles from "./DonateLinks.module.css";
 
 const shorten = (v: string) => (v.length > 14 ? `${v.slice(0, 6)}…${v.slice(-4)}` : v);
@@ -11,14 +12,16 @@ interface Props {
   hasNote?: boolean;
   dict: Dictionary["donate"];
   newTab: string;
+  id: string;
 }
 
-export default function DonateLinks({ nickname, donations, hasNote, dict, newTab }: Props) {
+export default function DonateLinks({ nickname, donations, hasNote, dict, newTab, id }: Props) {
   return (
-    <div className={styles.donate} aria-label={fill(dict.supportName, { name: nickname })} role="group">
-      <span className={styles.heading} aria-hidden="true">
+    <section className={styles.donate} aria-labelledby={id}>
+      <SectionHead id={id} role="community">
         {dict.support}
-      </span>
+        <span className="sr-only"> — {nickname}</span>
+      </SectionHead>
       {donations.length > 0 && (
       <ul className={styles.list}>
         {donations.map((d) => (
@@ -55,6 +58,6 @@ export default function DonateLinks({ nickname, donations, hasNote, dict, newTab
       )}
       {hasNote && <p className={styles.note}>{dict.noDonation}</p>}
       {donations.length > 0 && <p className={styles.purpose}>{dict.purpose}</p>}
-    </div>
+    </section>
   );
 }

@@ -1,34 +1,15 @@
-/* Compact: heading and links share one line; the scam warning always sits right under them. */
+/* Community zone: no box of its own; the section header identifies it. */
 .donate {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  padding: 8px 10px;
-  background: rgb(255 62 165 / 0.07);
-  border-left: var(--px) solid var(--magenta);
-}
-
-.donate > p {
-  flex-basis: 100%;
-}
-
-.heading {
-  font-family: var(--font-display);
-  font-size: 0.5625rem;
-  color: var(--magenta);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.heading::before {
-  content: "♥ ";
+  flex-direction: column;
+  gap: 8px;
 }
 
 .list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 12px; /* clears the 3px pixel borders of neighbouring buttons */
+  padding: 3px;
   min-width: 0;
 }
 
@@ -37,16 +18,9 @@
   min-width: 0;
 }
 
-.link[data-kind="ko-fi"] {
-  --pb: var(--cyan);
-}
-
-.link[data-kind="paypal"] {
-  --pb: var(--ps-blue-hi);
-}
-
-.link[data-kind="x"] {
-  --pb: var(--ink-dim);
+/* All donation buttons share the community colour, not brand colours. */
+.link {
+  --pb: var(--magenta);
 }
 
 .crypto {
@@ -58,9 +32,10 @@
 }
 
 .cryptoLabel {
-  font-family: var(--font-display);
-  font-size: 0.5625rem;
-  color: var(--yellow);
+  font-family: var(--font-text);
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-dim);
 }
 
 .address {
@@ -73,7 +48,7 @@
 }
 
 .copy {
-  --pb: var(--yellow);
+  --pb: var(--line-strong, #5c5ca6);
   min-width: 11ch;
   justify-content: center;
 }
@@ -84,7 +59,7 @@
 }
 
 .purpose {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.3;
   color: var(--yellow);
 }

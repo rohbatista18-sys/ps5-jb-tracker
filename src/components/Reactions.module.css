@@ -5,27 +5,6 @@
   gap: 8px;
 }
 
-.head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.title {
-  font-family: var(--font-display);
-  font-size: 0.5625rem;
-  color: var(--magenta);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.total {
-  font-size: 1rem;
-  color: var(--ink-faint);
-  white-space: nowrap;
-}
-
 /* Two rows of 8 (emojis, then flags), glyph above count. */
 .list {
   display: grid;
@@ -44,7 +23,7 @@
   padding: 4px 2px;
   background: var(--bg-deep);
   min-height: 44px;
-  box-shadow: 0 0 0 2px var(--line);
+  box-shadow: inset 0 0 0 2px var(--line-strong, #5c5ca6);
   -webkit-tap-highlight-color: transparent;
   transition: box-shadow 80ms steps(2), transform 80ms steps(2);
 }
@@ -64,6 +43,13 @@
 .button:not(:disabled):active {
   transform: translateY(2px);
   box-shadow: 0 0 0 2px var(--magenta);
+}
+
+/* Mouse on wide screens: 36px is enough and keeps the community zone short. */
+@media (pointer: fine) and (min-width: 640px) {
+  .button {
+    min-height: 36px;
+  }
 }
 
 @media (pointer: coarse), (max-width: 639px) {
@@ -108,7 +94,7 @@
   flex: 1;
   text-align: left;
   font-family: var(--font-display);
-  font-size: 0.5625rem;
+  font-size: 0.5rem; /* 8px: on Press Start 2P's grid */
   line-height: 1.4;
   color: #ffdf00;
   overflow-wrap: anywhere;
@@ -122,7 +108,7 @@
 
 .count {
   min-width: 2ch;
-  font-size: 0.8125rem;
+  font-size: 0.875rem; /* 14px: the one exception to the 16px floor, so "1,2 mil" fits */
   line-height: 1;
   text-align: center;
   color: var(--ink-dim);
@@ -190,6 +176,6 @@
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.45;
-  box-shadow: 0 0 0 2px var(--line);
+  box-shadow: inset 0 0 0 2px var(--line);
   transform: none;
 }

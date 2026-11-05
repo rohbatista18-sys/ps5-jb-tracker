@@ -17,18 +17,30 @@
   margin-top: 4px;
   padding: 2px 0;
   font-size: 1rem;
-  color: var(--cyan);
+  line-height: 1;
+  color: var(--ps-blue-hi);
   text-decoration: underline;
   text-underline-offset: 3px;
   background: none;
 }
 
 .toggle:hover {
-  color: var(--yellow);
+  color: var(--ink);
+}
+
+/* Inside a section header: no extra line for the toggle. */
+.toggle.inHead {
+  margin-top: 0;
+  padding: 0;
 }
 
 @media (pointer: coarse) {
   .toggle {
     min-height: var(--tap);
+  }
+
+  /* 44px target without growing the header line */
+  .toggle.inHead {
+    margin-block: -13px;
   }
 }

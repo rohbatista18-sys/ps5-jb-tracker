@@ -1,55 +1,78 @@
 .drawer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
+.drawer > :first-child {
+  margin-bottom: 8px;
+}
+
+/* Tabs rest on a baseline; the open one loses its bottom edge and merges with the panel. */
 .tabs {
   display: flex;
-  flex-wrap: wrap;
   gap: 4px;
+  padding: 0 4px;
+  box-shadow: inset 0 -2px 0 var(--line-strong, #5c5ca6);
 }
 
 .tab {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 32px;
-  padding: 4px 7px;
-  font-size: 0.9375rem;
+  padding: 6px 10px 4px;
+  font-size: 1rem;
+  line-height: 1;
   white-space: nowrap;
   color: var(--ink-dim);
   background: var(--panel-solid);
-  box-shadow: inset 0 0 0 2px var(--line);
+  box-shadow: inset 0 0 0 2px var(--line-strong, #5c5ca6);
 }
 
-.tab:hover {
-  color: var(--cyan);
-  box-shadow: inset 0 0 0 2px var(--cyan);
+.count {
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (hover: hover) {
+  .tab:hover {
+    color: var(--ink);
+    background: var(--panel-raised);
+  }
 }
 
 .tab[aria-expanded="true"] {
-  color: var(--bg-deep);
-  background: var(--cyan);
-  box-shadow: none;
+  color: var(--ink);
+  background: var(--bg-deep);
+  box-shadow:
+    inset 2px 0 0 var(--line-strong, #5c5ca6),
+    inset -2px 0 0 var(--line-strong, #5c5ca6),
+    inset 0 4px 0 var(--ps-blue-hi);
 }
 
-.chevron {
-  display: inline-block;
-  font-size: 0.75rem;
+.tab[aria-expanded="true"] .count {
+  color: var(--ps-blue-hi);
 }
 
-.tab[aria-expanded="true"] .chevron {
-  transform: rotate(90deg);
-}
-
-@media (pointer: coarse) {
-  .tab {
-    min-height: var(--tap);
-  }
+.tab:focus-visible {
+  z-index: 1;
+  outline-offset: 2px;
 }
 
 .panel {
   padding: 10px 12px;
   background: var(--bg-deep);
+  box-shadow:
+    inset 2px 0 0 var(--line-strong, #5c5ca6),
+    inset -2px 0 0 var(--line-strong, #5c5ca6),
+    inset 0 -2px 0 var(--line-strong, #5c5ca6);
+}
+
+@media (pointer: coarse), (max-width: 639px) {
+  .tab {
+    flex: 1 1 0;
+    justify-content: center;
+    min-height: var(--tap);
+  }
 }

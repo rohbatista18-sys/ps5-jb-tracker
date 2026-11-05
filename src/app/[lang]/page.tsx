@@ -34,7 +34,7 @@ async function Dashboard({ locale, dict }: { locale: Locale; dict: Dictionary })
       value: p.percent === null ? "?" : p.source === "ai" ? `~${p.percent}%` : `${p.percent}%`,
       percent: p.percent,
       source: p.source,
-      sourceLabel: p.source === "ai" ? dict.progress.sourceAi : dict.progress.sourceAuthor,
+      sourceLabel: p.source === "ai" ? dict.progress.sourceAiShort : dict.progress.sourceAuthorShort,
     };
   });
   return (

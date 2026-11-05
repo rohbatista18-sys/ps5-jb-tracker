@@ -1,60 +1,52 @@
-/* Progress "hero": the one dark panel inside the card, no border of its own. */
+/* Progress panel: the card's one dark inset panel. */
 .progress {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
+  padding: 10px 12px 12px;
   background: var(--bg-deep);
+  box-shadow: inset 0 0 0 2px var(--line);
 }
 
+/* Big number with its caption beside it */
 .hero {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  column-gap: 12px;
 }
 
 .pct {
   font-family: var(--font-display);
-  font-size: 1.75rem;
+  font-size: 1.5rem; /* 24px: on Press Start 2P's 8px grid */
   line-height: 1;
   color: var(--ink);
   text-shadow: 3px 3px 0 var(--ps-blue);
 }
 
+/* Green = the author's confirmed number; yellow = our unconfirmed estimate. */
 .progress[data-source="author"] .pct {
   color: var(--green);
   text-shadow: 3px 3px 0 #0f5a33;
 }
 
-/* Source chip: solid = the author's own number, dashed = our AI estimate (not official). */
-.tag {
-  padding: 3px 8px;
-  font-family: var(--font-display);
-  font-size: 0.5625rem;
-  line-height: 1.2;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.tag[data-source="author"] {
-  color: var(--bg-deep);
-  background: var(--cyan);
-}
-
-.tag[data-source="ai"] {
+.progress[data-source="ai"] .pct {
   color: var(--yellow);
-  outline: 2px dashed var(--yellow);
-  outline-offset: -2px;
+  text-shadow: 3px 3px 0 #5c4a0a;
 }
 
-/* Score: chunky 8-bit bar with a continuous fill */
+.caption {
+  font-size: 1rem;
+  line-height: 1.2;
+  color: var(--ink-dim);
+}
+
+/* Score: chunky bar with a continuous fill */
 .bar {
   height: 16px;
   padding: 2px;
   background: var(--panel-solid);
-  box-shadow: inset 0 0 0 2px var(--line);
+  box-shadow: inset 0 0 0 2px var(--line-strong, #5c5ca6);
 }
 
 .fill {
@@ -62,18 +54,6 @@
   height: 100%;
   background: var(--green);
   box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.25), inset 0 3px 0 rgb(255 255 255 / 0.25);
-}
-
-.pips {
-  display: flex;
-  gap: 3px;
-  margin-top: 6px;
-}
-
-.pip {
-  flex: 1 1 0;
-  height: 6px;
-  box-shadow: inset 0 0 0 2px var(--line);
 }
 
 /* Stages: one block per stage; state shown by fill pattern, not colour alone */
@@ -87,17 +67,15 @@
   flex: 1 1 0;
   min-width: 0;
   background: var(--panel-solid);
-  box-shadow: inset 0 0 0 2px var(--line);
+  box-shadow: inset 0 0 0 2px var(--line-strong, #5c5ca6);
 }
 
-.seg[data-state="done"],
-.pip[data-state="done"] {
+.seg[data-state="done"] {
   background: var(--green);
-  box-shadow: none;
+  box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.25);
 }
 
-.seg[data-state="partial"],
-.pip[data-state="partial"] {
+.seg[data-state="partial"] {
   background: repeating-linear-gradient(135deg, var(--yellow) 0 3px, var(--panel-solid) 3px 6px);
   box-shadow: inset 0 0 0 2px var(--yellow);
 }
@@ -106,20 +84,16 @@
   opacity: 0.5;
 }
 
-.caption {
-  font-size: 1rem;
-  line-height: 1.25;
-  color: var(--ink-dim);
-}
-
 .next {
   font-size: 1rem;
   line-height: 1.25;
   color: var(--ink);
 }
 
-.next > span[aria-hidden] {
-  color: var(--yellow);
+.nextLabel {
+  color: var(--ink-faint);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .nextStatus {
@@ -127,6 +101,12 @@
 }
 
 /* Full stage list (card drawer) */
+.panelTitle {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--ink-dim);
+}
+
 .stageList {
   display: flex;
   flex-direction: column;
@@ -171,6 +151,6 @@
 
 .note {
   margin-top: 8px;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: var(--ink-dim);
 }

@@ -1,18 +1,34 @@
 .card {
   --pb: var(--ps-blue);
   --accent: var(--ps-blue-hi);
+  /* One meaning per accent inside the card:
+     green = confirmed progress · yellow = not confirmed (AI, partial, warnings)
+     cyan = the dev's own voice · lavender (ink-dim) = GitHub / metadata
+     magenta = community (support + salves) · blue-hi = clickable · red = stalled / error */
+  --line-strong: #5c5ca6; /* control edges: 3.2–3.4:1 against the panels */
   position: relative;
-  /* 4 rows shared with the sibling cards (identity, progress, activity, the rest), so the
-     scoreboard part lines up across devs. Nothing in rows 1–3 expands; toggles live in row 4. */
+  /* 4 rows shared with the sibling cards (identity, progress, activity, the rest), so sections
+     line up across devs. Nothing in rows 1–3 expands; toggles live in row 4. */
   display: grid;
   grid-row: span 4;
   grid-template-rows: subgrid;
   grid-template-columns: minmax(0, 1fr);
-  row-gap: 14px;
+  row-gap: var(--space-4);
   align-content: start;
   min-width: 0;
   padding: 18px 16px 16px;
   background: var(--panel);
+}
+
+.card a:hover {
+  color: var(--ps-blue-hi);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Pixel buttons inside the card: 8px, on Press Start 2P's grid (the global is 9px). */
+.card :global(.px-btn) {
+  font-size: 0.5rem;
 }
 
 /* top "cartridge" stripe: identity, kept quiet */
@@ -35,20 +51,19 @@
   --accent: var(--ink-faint);
 }
 
-/* ---------- row 1: identity ---------- */
-.header {
+.section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 
-.titleRow {
+/* ---------- 1 · identity ---------- */
+.header {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px 12px;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
 }
 
 .nickname {
@@ -62,55 +77,21 @@
   text-shadow: 2px 2px 0 var(--ps-blue);
 }
 
-/* Status: dot + coloured text; only a breakthrough gets a filled, glowing badge. */
-.badge {
-  --c: var(--ink-dim);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--font-display);
-  font-size: 0.5625rem;
-  line-height: 1;
-  color: var(--c);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.badge::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  background: var(--c);
-}
-
-.badge[data-status="early"] { --c: var(--cyan); }
-.badge[data-status="progressing"] { --c: var(--ps-blue-hi); }
-.badge[data-status="stalled"] { --c: var(--red); }
-.badge[data-status="breakthrough"] {
-  --c: var(--bg-deep);
-  padding: 6px 8px 5px;
-  background: var(--green);
-  box-shadow: 0 0 0 2px var(--green), 0 0 14px rgb(61 245 138 / 0.6);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .badge[data-status="breakthrough"] {
-    animation: blink 1.2s steps(2, jump-none) infinite;
-  }
-}
-
-@keyframes blink {
-  50% { box-shadow: 0 0 0 2px var(--yellow), 0 0 18px rgb(255 210 63 / 0.7); }
-}
-
 .meta {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
-  gap: 2px 12px;
+  gap: 8px;
   min-width: 0;
   font-size: 1rem;
+  line-height: 1.2;
   color: var(--ink-dim);
+}
+
+.metaLabel {
+  flex: none;
+  letter-spacing: 0.08em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
 }
 
 .meta a {
@@ -118,14 +99,8 @@
   text-decoration: none;
 }
 
-.meta a:hover {
-  color: var(--cyan);
-  text-decoration: underline;
-}
-
 .repoLink {
   min-width: 0;
-  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -135,38 +110,111 @@
   content: " ↗";
 }
 
-.xLink {
-  white-space: nowrap;
-}
-
 .stars {
-  color: var(--yellow);
+  flex: none;
+  color: var(--ink-faint);
   white-space: nowrap;
 }
 
-/* ---------- row 3: recent activity ---------- */
-.activity {
+/* ---------- 3 · activity ---------- */
+.time {
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.postList {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  list-style: none;
+}
+
+/* X post = the dev's words: solid cyan rail. Someone else's repost: dashed neutral rail, dimmer. */
+.post {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding-left: 12px;
+  border-left: 4px solid var(--cyan);
+}
+
+.post[data-kind="repost"] {
+  border-left: 0;
+  background: repeating-linear-gradient(180deg, var(--ink-faint) 0 4px, transparent 4px 8px) left top / 4px 100% no-repeat;
+}
+
+.postHead {
+  display: flex;
+  align-items: center;
   gap: 8px;
   min-width: 0;
-}
-
-.label {
-  font-family: var(--font-display);
-  font-size: 0.5625rem;
-  line-height: 1.4;
-  color: var(--ink-dim);
-  text-transform: uppercase;
-}
-
-.lastCommit {
   font-size: 1rem;
-  color: var(--ink);
+  line-height: 1;
+  color: var(--ink-faint);
 }
 
-.commitWhen {
-  color: var(--cyan);
+.postWho {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink-dim);
+}
+
+.postHead .time {
+  margin-left: auto;
+}
+
+/* "EN": the text below is the dev's original, untranslated and unverified */
+.lang {
+  flex: none;
+  padding: 0 3px;
+  font-size: 0.875rem;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 1px var(--ink-faint);
+  cursor: help;
+}
+
+.postText {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--clamp, 3);
+  overflow: hidden;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  color: var(--ink);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.post[data-kind="repost"] .postText {
+  color: var(--ink-dim);
+}
+
+.postText::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.card .post:hover .postText {
+  color: var(--ps-blue-hi);
+  text-decoration: none;
+}
+
+.postText:focus-visible {
+  outline: none;
+}
+
+.post:has(.postText:focus-visible) {
+  outline: 3px solid var(--yellow);
+  outline-offset: 2px;
 }
 
 .noX {
@@ -179,105 +227,29 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.3;
   color: var(--ink);
   overflow-wrap: anywhere;
   text-decoration: none;
 }
 
-.commitLine:hover {
-  color: var(--cyan);
-}
-
-.postList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  list-style: none;
-}
-
-/* X post: 4px pixel rail coloured by kind (also named in text), whole item clickable */
-.post {
-  --k: var(--cyan);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  padding: 2px 0 2px 10px;
-  border-left: 4px solid var(--k);
-}
-
-.post[data-kind="reply"] { --k: var(--magenta); }
-.post[data-kind="repost"] { --k: var(--yellow); }
-
-.postHead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 0.9375rem;
-}
-
-.postKind {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--k);
-}
-
-.postTime {
-  flex: none;
-  color: var(--ink-dim);
-  white-space: nowrap;
-}
-
-.postText {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: var(--clamp, 3);
-  overflow: hidden;
-  font-size: 1.0625rem;
-  line-height: 1.3;
-  color: var(--ink);
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-  text-decoration: none;
-}
-
-.postText::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-}
-
-.post:hover .postText {
-  color: var(--cyan);
-}
-
-.postText:focus-visible {
-  outline: none;
-}
-
-.post:has(.postText:focus-visible) {
-  outline: 3px solid var(--yellow);
-  outline-offset: 2px;
-}
-
-/* ---------- row 4: everything else ---------- */
+/* ---------- 4 · reading zone + community ---------- */
 .flow {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-4);
   min-width: 0;
 }
 
+/* AI summary: no rail, one tone dimmer than the dev's words; the dashed AI tag names it. */
 .summary {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   font-size: 1.125rem;
-  line-height: 1.35;
-  color: var(--ink);
+  line-height: 1.3;
+  color: var(--ink-dim);
 }
 
 .aiHint {
@@ -285,8 +257,22 @@
   color: var(--yellow);
 }
 
+/* Support + salves sit at the bottom of the card, so they line up across the grid. */
+.community {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: auto;
+}
+
+.panelTitle {
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: var(--ink-dim);
+}
+
 .note {
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: var(--ink-dim);
 }
 
@@ -299,11 +285,11 @@
 }
 
 .error {
-  padding: 8px 12px;
-  font-size: 1.0625rem;
+  padding: 6px 10px;
+  font-size: 1rem;
   color: var(--ink);
-  background: rgb(255 90 110 / 0.12);
-  border-left: var(--px) solid var(--red);
+  background: rgb(255 90 110 / 0.1);
+  box-shadow: inset 4px 0 0 var(--red);
 }
 
 .error strong {
@@ -311,10 +297,11 @@
   font-weight: 400;
 }
 
+/* Commits: machine data, framed sha + plain message */
 .commits {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   list-style: none;
 }
 
@@ -323,7 +310,7 @@
   align-items: baseline;
   gap: 10px;
   min-width: 0;
-  font-size: 1rem;
+  font-size: 1.125rem;
 }
 
 .commits li a {
@@ -333,29 +320,23 @@
   flex: 1;
   min-width: 0;
   color: var(--ink);
-}
-
-.commits li a:hover .message {
-  color: var(--cyan);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .sha {
   flex: none;
+  padding: 0 4px;
   font-family: var(--font-text);
-  color: var(--ps-blue-hi);
+  font-size: 1rem;
+  color: var(--ink-dim);
+  background: var(--bg-deep);
+  box-shadow: inset 0 0 0 2px var(--line);
 }
 
 .message {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.commitTime {
-  flex: none;
-  color: var(--ink-dim);
   white-space: nowrap;
 }
 
@@ -366,7 +347,7 @@
   flex-direction: column;
   grid-row: auto;
   gap: 14px;
-  min-height: 640px;
+  min-height: 900px;
 }
 
 .bone {
