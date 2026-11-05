@@ -8,9 +8,11 @@ const TABLE_HEAD = /^\s*\|\s*(stage|milestone|component|step|phase)\s*\|/i;
 const SCORE_LINE = /progress|estimate|score|milestone/i;
 const SCORE = /\b(\d{1,3})\s*\/\s*100\b/;
 const POINTS = /^(\d{1,3})\s*\/\s*(\d{1,3})$/;
-const NOT_DONE = /\bnot\b|\bno\b|blocked|dead|designed|planned|next|todo|pending|unknown/i;
+const NOT_DONE = /\bnot\b|\bno\b|blocked|dead|planned|next|todo|pending|unknown/i;
 const DONE = /\b(confirmed|done|complete[d]?|working|demonstrated|achieved)\b|✅/i;
-const PARTIAL = /\b(partial|defined|present|in progress|wip|ongoing)\b/i;
+// "DESIGNED" = worked out but not demonstrated yet: partial, worth half a stage in the %. Code that
+// merely exists ("Defined in source", "Present in source") is not progress, so it stays "none".
+const PARTIAL = /\b(partial|designed|in progress|wip|ongoing)\b/i;
 const MAX_ROWS = 12;
 const CELL_MAX = 80;
 
@@ -60,8 +62,11 @@ export function parseSelfReport(readme: string | null): SelfReport | null {
   if (!readme) return null;
   const stages = stageTable(readme);
   const points = score(readme);
-  if (points !== null) return { percent: points, kind: "score", done: points, total: 100, stages };
+  const partial = stages?.filter((s) => s.state === "partial").length ?? 0;
+  if (points !== null) return { percent: points, kind: "score", done: points, total: 100, partial: 0, stages };
   if (!stages) return null;
   const done = stages.filter((s) => s.state === "done").length;
-  return { percent: Math.round((done / stages.length) * 100), kind: "stages", done, total: stages.length, stages };
+  // Same weighting as the AI estimate: a partial stage counts half.
+  const percent = Math.round(((done + partial / 2) / stages.length) * 100);
+  return { percent, kind: "stages", done, total: stages.length, partial, stages };
 }

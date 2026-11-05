@@ -1,0 +1,120 @@
+.switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tiles,
+.next {
+  display: none;
+}
+
+@media (max-width: 759px) {
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    scroll-margin-top: 12px;
+  }
+
+  /* Only the chosen card shows; the data-js gate keeps all cards visible before hydration. */
+  .switcher [data-js][data-active="zig"] > :not([data-dev="zig"]),
+  .switcher [data-js][data-active="pasta"] > :not([data-dev="pasta"]),
+  .switcher [data-js][data-active="kuzi"] > :not([data-dev="kuzi"]),
+  .switcher [data-js][data-active="oniz"] > :not([data-dev="oniz"]) {
+    display: none;
+  }
+
+  .next {
+    display: block;
+    align-self: flex-end;
+    min-height: var(--tap);
+    padding: 8px 14px;
+    font-family: var(--font-display);
+    font-size: 0.625rem;
+    color: var(--cyan);
+    text-transform: uppercase;
+    background: var(--bg-deep);
+    box-shadow: inset 0 0 0 2px var(--cyan);
+  }
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+  min-height: 72px;
+  padding: 8px 10px;
+  text-align: left;
+  background: var(--panel-solid);
+  box-shadow: inset 0 0 0 2px var(--line);
+}
+
+.tile[aria-pressed="true"] {
+  background: rgb(0 112 209 / 0.18);
+  box-shadow: inset 0 0 0 2px var(--yellow);
+}
+
+.name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.tile[aria-pressed="true"] .name::before {
+  content: "▶ ";
+  color: var(--yellow);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.value {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.value[data-source="author"] {
+  color: var(--green);
+}
+
+.source {
+  padding: 1px 4px;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.source[data-source="author"] {
+  color: var(--bg-deep);
+  background: var(--cyan);
+}
+
+.source[data-source="ai"] {
+  color: var(--yellow);
+  outline: 1px dashed var(--yellow);
+  outline-offset: -1px;
+}
+
+.mini {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-deep);
+}
+
+.mini > span {
+  display: block;
+  height: 100%;
+  background: var(--green);
+}

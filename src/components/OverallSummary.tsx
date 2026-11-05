@@ -1,6 +1,7 @@
 import type { DashboardData } from "@/lib/types";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
+import Clamp from "./Clamp";
 import RelativeTime from "./RelativeTime";
 import styles from "./OverallSummary.module.css";
 
@@ -18,10 +19,13 @@ export default function OverallSummary({ overall, locale, dict, aiHint }: Props)
         {dict.title}
       </h2>
       <div className={styles.body}>
-        <p className={styles.text}>
-          {overall.text[locale]}
-          <span className={styles.cursor} aria-hidden="true" />
-        </p>
+        <Clamp lines={3} more={dict.more} less={dict.less} mobileOnly>
+          <p className={styles.text}>
+            {overall.text[locale]}
+            <span className={styles.cursor} aria-hidden="true" />
+          </p>
+        </Clamp>
+        <p className={styles.compare}>{dict.compareNote}</p>
         <footer className={styles.footer}>
           {overall.fallback && <span className={styles.hint}>{aiHint}</span>}
           <span>

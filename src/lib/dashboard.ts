@@ -3,6 +3,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getRepoSnapshot } from "./github";
 import { REPOS } from "./repos";
 import { parseSelfReport } from "./self-report";
+import { getXPosts } from "./x-posts";
 import { summarizeOverall, summarizeRepo } from "./summarize";
 import type { DashboardData, RepoView } from "./types";
 
@@ -10,13 +11,17 @@ export async function getDashboard(): Promise<DashboardData> {
   "use cache";
   cacheTag("github", "dashboard");
 
-  const snapshots = await Promise.all(REPOS.map((c) => getRepoSnapshot(c)));
+  const [snapshots, xPosts] = await Promise.all([
+    Promise.all(REPOS.map((c) => getRepoSnapshot(c))),
+    Promise.all(REPOS.map((c) => (c.x ? getXPosts(c.x) : null))),
+  ]);
   const repos: RepoView[] = await Promise.all(
     // The README is only needed for the prompt; keep it out of the cached dashboard and page props.
-    snapshots.map(async (s) => ({
+    snapshots.map(async (s, i) => ({
       ...s,
       readme: null,
       selfReport: parseSelfReport(s.readme),
+      xPosts: xPosts[i],
       summary: await summarizeRepo(s),
     })),
   );

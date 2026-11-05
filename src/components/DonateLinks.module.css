@@ -1,11 +1,16 @@
+/* Compact: heading and links share one line; the scam warning always sits right under them. */
 .donate {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px 10px;
   background: rgb(255 62 165 / 0.07);
   border-left: var(--px) solid var(--magenta);
+}
+
+.donate > p {
+  flex-basis: 100%;
 }
 
 .heading {
@@ -23,7 +28,7 @@
 .list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3) var(--space-4); /* clears the 3px pixel borders of neighbouring buttons */
+  gap: 10px 12px; /* clears the 3px pixel borders of neighbouring buttons */
   min-width: 0;
 }
 
@@ -60,7 +65,7 @@
 
 .address {
   font-family: var(--font-text);
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--ink);
   background: var(--bg-deep);
   padding: 0 6px;
@@ -74,12 +79,12 @@
 }
 
 .note {
-  font-size: 1.0625rem;
+  font-size: 1rem;
   color: var(--ink-dim);
 }
 
 .purpose {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   line-height: 1.3;
   color: var(--yellow);
 }

@@ -12,6 +12,20 @@
   image-rendering: pixelated;
 }
 
+/* Visitors' floor: fixed to the bottom edge, over the page (z 15, under the HUD and the own
+   sprite at 20). Transparent except the thin ground and the sprites; never takes clicks. */
+.floor {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 15;
+  display: block;
+  width: 100%;
+  height: 112px;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
 .hud {
   position: fixed;
   right: max(12px, env(safe-area-inset-right));

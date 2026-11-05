@@ -45,6 +45,15 @@ export async function kvKeepFirst<T>(key: string, value: T): Promise<T> {
   return (await kvGet<T>(key)) ?? value;
 }
 
+/** Stores `value` under `key`, replacing any previous value (last writer wins). */
+export async function kvSet<T>(key: string, value: T): Promise<void> {
+  await call<null>("kv?on_conflict=key", {
+    method: "POST",
+    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ key, value }),
+  });
+}
+
 /** All counters whose key starts with `prefix`, as { key: value }. */
 export async function countersWithPrefix(prefix: string): Promise<Record<string, number>> {
   const rows = await call<{ key: string; value: number }[]>(

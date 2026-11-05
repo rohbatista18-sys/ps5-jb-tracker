@@ -2,9 +2,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-top: 12px;
-  border-top: 2px dashed var(--line);
+  gap: 8px;
 }
 
 .head {
@@ -28,22 +26,24 @@
   white-space: nowrap;
 }
 
+/* Two rows of 8 (emojis, then flags), glyph above count. */
 .list {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 4px;
   list-style: none;
 }
 
 .button {
   display: flex;
+  flex-direction: column;
   width: 100%;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 6px 4px;
+  gap: 2px;
+  padding: 4px 2px;
   background: var(--bg-deep);
-  min-height: 36px;
+  min-height: 44px;
   box-shadow: 0 0 0 2px var(--line);
   -webkit-tap-highlight-color: transparent;
   transition: box-shadow 80ms steps(2), transform 80ms steps(2);
@@ -73,7 +73,12 @@
 }
 
 /* Dev-exclusive reaction: full width, Brazil green/yellow pixel frame */
+.exclusive .count {
+  font-size: 1rem;
+}
+
 .exclusive {
+  flex-direction: row;
   width: calc(100% - 12px);
   margin: 6px auto 4px;
   justify-content: flex-start;
@@ -117,7 +122,9 @@
 
 .count {
   min-width: 2ch;
-  font-size: 1rem;
+  font-size: 0.8125rem;
+  line-height: 1;
+  text-align: center;
   color: var(--ink-dim);
   font-variant-numeric: tabular-nums;
 }

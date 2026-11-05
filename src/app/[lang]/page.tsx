@@ -10,6 +10,8 @@ import NewsSection, { NewsSkeleton } from "@/components/NewsSection";
 import MoreRepos from "@/components/MoreRepos";
 import GuideNotice from "@/components/GuideNotice";
 import BigNotice from "@/components/BigNotice";
+import DevSwitcher from "@/components/DevSwitcher";
+import { progressOf } from "@/lib/progress";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
@@ -24,14 +26,25 @@ async function LastChecked({ locale }: { locale: Locale }) {
 async function Dashboard({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const { repos, overall } = await getDashboard();
   // Overall summary first: it answers "how close is the jailbreak?" before any scrolling.
+  const tiles = repos.map((repo) => {
+    const p = progressOf(repo);
+    return {
+      id: repo.config.id,
+      nickname: repo.config.nickname,
+      value: p.percent === null ? "?" : p.source === "ai" ? `~${p.percent}%` : `${p.percent}%`,
+      percent: p.percent,
+      source: p.source,
+      sourceLabel: p.source === "ai" ? dict.progress.sourceAi : dict.progress.sourceAuthor,
+    };
+  });
   return (
     <>
       <OverallSummary overall={overall} locale={locale} dict={dict.overall} aiHint={dict.card.aiHint} />
-      <div className={styles.grid}>
+      <DevSwitcher tiles={tiles} label={dict.switcher.label} nextLabel={dict.switcher.next} gridClass={styles.grid}>
         {repos.map((repo) => (
           <RepoCard key={repo.config.id} repo={repo} locale={locale} dict={dict} />
         ))}
-      </div>
+      </DevSwitcher>
     </>
   );
 }
@@ -60,25 +73,29 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
       <GuideNotice dict={dict.guide} newTab={dict.card.newTab} />
       <BigNotice dict={dict.bigNotice} />
       <header className={styles.header}>
-        <LanguageSwitcher current={lang} label={dict.header.language} />
-        <PsButtons className={styles.buttons} />
-        <h1 className={styles.title}>
-          <span className={styles.titleTop}>PS5 14.10</span>
-          <span className={styles.titleBottom}>Jailbreak Tracker</span>
-        </h1>
-        <p className={styles.subtitle}>{dict.header.subtitle}</p>
-        <p className={styles.checked}>
-          <span className={styles.checkedLabel}>{dict.header.lastChecked}</span>
-          <Suspense fallback={<span className={styles.checkedTime}>…</span>}>
-            <LastChecked locale={lang} />
-          </Suspense>
-        </p>
-        {/* Both modal buttons on one row, to keep the header short. */}
-        <div className={styles.headerActions}>
-          <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
-            <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
-          </Suspense>{" "}
-          <MoreRepos locale={lang} dict={dict.moreRepos} newTab={dict.card.newTab} />
+        <div className={styles.headerMain}>
+          <PsButtons className={styles.buttons} />
+          <h1 className={styles.title}>
+            <span className={styles.titleTop}>PS5 14.10</span>
+            <span className={styles.titleBottom}>Jailbreak Tracker</span>
+          </h1>
+          <p className={styles.subtitle}>{dict.header.subtitle}</p>
+        </div>
+        <div className={styles.headerSide}>
+          <LanguageSwitcher current={lang} label={dict.header.language} />
+          <p className={styles.checked}>
+            <span className={styles.checkedLabel}>{dict.header.lastChecked}</span>
+            <Suspense fallback={<span className={styles.checkedTime}>…</span>}>
+              <LastChecked locale={lang} />
+            </Suspense>
+          </p>
+          {/* Both modal buttons on one row, to keep the header short. */}
+          <div className={styles.headerActions}>
+            <Suspense fallback={<NewsSkeleton dict={dict.news} />}>
+              <NewsSection locale={lang} dict={dict.news} newTab={dict.card.newTab} />
+            </Suspense>{" "}
+            <MoreRepos locale={lang} dict={dict.moreRepos} newTab={dict.card.newTab} />
+          </div>
         </div>
       </header>
 

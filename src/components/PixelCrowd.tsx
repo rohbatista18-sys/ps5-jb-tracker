@@ -6,7 +6,7 @@ import { useLiveSalves } from "@/hooks/useLiveSalves";
 import { EMOTE_EVENT, REACTIONS, type EmoteDetail } from "@/lib/reactions-config";
 import { SPRITES, SPRITE_HEIGHT, rasterize, rasterizeLabel } from "./sprites";
 import { FLAGS, isFlagKey, rasterizeFlag } from "./flags";
-import { DEPTH_ALPHA, DEPTH_SCALE, createScenery, type Platform, type Scenery } from "./scenery";
+import { DEPTH_SCALE, createScenery, type Platform, type Scenery } from "./scenery";
 import styles from "./PixelCrowd.module.css";
 
 export const MAX_SPRITES = 40;
@@ -19,8 +19,6 @@ const POP_S = 0.45;
 const FADE_S = 1.6;
 const HOP_S = 0.8;
 const HOP_CHANCE = 0.06;
-// Room (in sprite cells) the own sprite needs above its feet for the label and rising emotes.
-const SELF_HEADROOM = SPRITE_HEIGHT + 30;
 // Horizontal room (in cells, from the sprite's left edge) for the sprite, emoji and a wrapped
 // shout bubble, plus margins. The own sprite blends into the scenery only where this fits
 // entirely inside the free left gutter; otherwise it moves to the corner overlay.
@@ -34,6 +32,9 @@ const LEDGE_ROWS = 9;
 const OVERLAY_ROWS = LEDGE_ROWS + SPRITE_HEIGHT + 20;
 const OVERLAY_SPRITE_X = 2;
 const OVERLAY_GAP_CSS = 8;
+// Visitors walk on a thin floor fixed to the bottom of the screen, drawn over the page content
+// (the scene behind the page is mostly covered by the dev cards). CSS px tall, incl. emote room.
+const FLOOR_CSS = 112;
 const EMOTE_MS = 2200;
 const EMOTE_STAGGER_MS = 280;
 const EMOTE_PENDING_MAX_MS = 60_000;
@@ -171,12 +172,14 @@ const flagFor = (emoji: string) => {
 export function createCrowd(
   canvas: HTMLCanvasElement,
   overlay: HTMLCanvasElement,
+  floor: HTMLCanvasElement,
   selfSeed: string,
   selfLabel: string,
   hud: HTMLElement | null,
 ): Crowd {
   const ctx = canvas.getContext("2d")!;
   const octx = overlay.getContext("2d")!;
+  const fctx = floor.getContext("2d")!;
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const cache: (HTMLCanvasElement | undefined)[] = [];
   const label = rasterizeLabel(selfLabel, "#ffd166");
@@ -191,11 +194,11 @@ export function createCrowd(
   const pixelFont = getComputedStyle(document.documentElement).getPropertyValue("--font-pixel").trim() || "monospace";
   const mainSurf: Surface = { ctx, W: 0, H: 0, px: 4, left: 0, right: 0, emojiFont: "", shoutFont: "" };
   const overSurf: Surface = { ctx: octx, W: 0, H: 0, px: 3, left: 0, right: 0, emojiFont: "", shoutFont: "" };
-  const otherSurf: Surface = { ctx, W: 0, H: 0, px: 4, left: 0, right: 0, emojiFont: "", shoutFont: "" };
+  const otherSurf: Surface = { ctx: fctx, W: 0, H: 0, px: 4, left: 0, right: 0, emojiFont: "", shoutFont: "" };
+  let FH = 0; // floor canvas height, device px
   let target = 1;
   let W = 0;
   let H = 0;
-  let visH = 0; // device px always visible from the top, even with mobile toolbars shown
   let cssW = 0;
   let ratio = 1; // device px per CSS px
   let px = 4;
@@ -261,23 +264,6 @@ export function createCrowd(
     gutter = Math.max(0, left) * ratio;
   };
 
-  /** A near platform where the whole own-sprite footprint fits in the gutter, or -1. */
-  const pickSelfPlatform = (a: Actor) => {
-    if (cssW < 640) return -1;
-    const c = cellFor(2);
-    const sw = img(a, 0).width * c;
-    let best = -1;
-    for (let i = 0; i < plats.length; i++) {
-      const p = plats[i];
-      if (p.depth !== 2) continue;
-      const lo = Math.max(p.x0, SELF_FOOT_L * c);
-      const hi = Math.min(p.x1 - sw, gutter - SELF_FOOT_R * c);
-      if (hi < lo || p.y > visH - 2 * c || p.y - SELF_HEADROOM * c < 0) continue;
-      if (best < 0 || p.y > plats[best].y) best = i;
-    }
-    return best;
-  };
-
   /** Size and place the corner overlay: bottom-left, clear of the HUD, inside 100svh. */
   const layoutOverlay = () => {
     const dpr = window.devicePixelRatio || 1;
@@ -305,9 +291,8 @@ export function createCrowd(
 
   /** Decide where the own sprite lives (gutter platform or corner overlay) and fit it there. */
   const assignSelf = (a: Actor) => {
-    const p = pickSelfPlatform(a);
-    useOverlay = p < 0;
-    if (!useOverlay) a.plat = p;
+    // The own sprite always stands on its ledge in the corner; the floor is for the other visitors.
+    useOverlay = true;
     layoutOverlay();
     mainSurf.right = Math.max(0, gutter - 2 * px);
     fit(a);
@@ -418,19 +403,19 @@ export function createCrowd(
       H = canvas.height = nextH;
     }
     px = nextPx;
-    // Smallest viewport height (toolbars shown), so the own sprite never hides under them.
-    const probe = document.createElement("div");
-    probe.style.cssText = "position:fixed;top:0;height:100svh;visibility:hidden;pointer-events:none";
-    document.body.appendChild(probe);
-    visH = Math.min(H, (probe.getBoundingClientRect().height || cssH) * ratio);
-    probe.remove();
     mainSurf.W = W;
     mainSurf.H = H;
     mainSurf.px = px;
     mainSurf.emojiFont = `${7 * px}px ${EMOJI_FONT}`;
     mainSurf.shoutFont = `${2 * px}px ${pixelFont}, monospace`;
+    FH = Math.max(1, Math.round(FLOOR_CSS * ratio));
+    if (floor.width !== W || floor.height !== FH) {
+      floor.width = W;
+      floor.height = FH;
+    }
+    fctx.imageSmoothingEnabled = false;
     otherSurf.W = otherSurf.right = W;
-    otherSurf.H = H;
+    otherSurf.H = FH;
     otherSurf.px = px;
     otherSurf.emojiFont = mainSurf.emojiFont;
     otherSurf.shoutFont = mainSurf.shoutFont;
@@ -439,7 +424,7 @@ export function createCrowd(
     // Relative position on the old platform survives the rebuild.
     for (const a of actors) a.jump = a.hi > a.lo ? (a.x - a.lo) / (a.hi - a.lo) : 0.5;
     scenery = createScenery(W, H, px, SCENERY_SEED);
-    plats = scenery.platforms.length ? scenery.platforms : [{ x0: 0, x1: W, y: H - 2 * px, depth: 2 }];
+    plats = [{ x0: 0, x1: W, y: FH - 3 * px, depth: 1 }];
     measureGutter();
     for (const a of actors) {
       const rel = a.jump;
@@ -703,15 +688,6 @@ export function createCrowd(
     drawSelfExtras(overSurf, a.x, a.w, feet - a.h - jumpOff, animated);
   };
 
-  /** True when the page shows plain background at this canvas point (no content block over it). */
-  const isClear = (x: number, y: number) => {
-    const cx = x / ratio;
-    const cy = y / ratio;
-    if (cx < 0 || cy < 0 || cx >= cssW || y >= visH) return false;
-    const el = document.elementFromPoint(cx, cy);
-    return !el || el === document.body || el === document.documentElement || el === canvas;
-  };
-
   const drawOthers = (animated: boolean) => {
     const now = performance.now();
     let n = 0;
@@ -722,20 +698,30 @@ export function createCrowd(
         o.x = o.a.x + o.a.w / 2;
         o.top = baseOf(o.a) - o.a.h - jumpOffset(o.a) - 2 * o.a.cell;
       }
-      // Keep the emoji and shout in the free gutter on the sprite's side, not behind the content.
-      const g = gutter - 2 * px;
-      const wide = g > 60 * ratio;
-      otherSurf.left = !wide || o.x < W / 2 ? 0 : W - g;
-      otherSurf.right = !wide || o.x >= W / 2 ? W : g;
+      otherSurf.left = 0;
+      otherSurf.right = W;
       paintEmote(otherSurf, o.e, now, o.x, o.top, animated);
       others[n++] = o;
     }
     others.length = n;
   };
 
+  /** Thin pixel ground along the bottom of the screen for the visitors to walk on. */
+  const drawFloor = () => {
+    const y = plats[0].y;
+    fctx.globalAlpha = 0.92;
+    fctx.fillStyle = LEDGE_BODY;
+    fctx.fillRect(0, y, W, FH - y);
+    fctx.fillStyle = LEDGE_TOP;
+    fctx.fillRect(0, y, W, px);
+    fctx.globalAlpha = 1;
+  };
+
   const draw = (animated: boolean) => {
     ctx.clearRect(0, 0, W, H);
     scenery?.drawBack(ctx, clock, animated);
+    fctx.clearRect(0, 0, W, FH);
+    drawFloor();
 
     // Insertion sort into a reused array: no per-frame allocation.
     order.length = 0;
@@ -766,16 +752,16 @@ export function createCrowd(
       const base = Math.round(baseOf(a));
       const jumpOff = jumpOffset(a);
       const cx = Math.round(a.x / cell) * cell + Math.round((sprite.width * cell - w) / 2 / cell) * cell;
-      const alpha = (a.self ? 1 : DEPTH_ALPHA[plats[a.plat].depth]) * (a.leaving ? Math.max(0, 1 - a.leaving / FADE_S) : 1);
+      const alpha = (a.leaving ? Math.max(0, 1 - a.leaving / FADE_S) : 1);
 
       if (a.mode !== "hop") {
-        ctx.globalAlpha = alpha * 0.5 * (jumpOff ? 0.6 : 1);
-        ctx.fillStyle = "#000";
-        ctx.fillRect(cx + cell, base, w - 2 * cell, cell);
+        fctx.globalAlpha = alpha * 0.5 * (jumpOff ? 0.6 : 1);
+        fctx.fillStyle = "#000";
+        fctx.fillRect(cx + cell, base, w - 2 * cell, cell);
       }
 
-      ctx.globalAlpha = alpha;
-      ctx.drawImage(sprite, cx, base - h - jumpOff, w, h);
+      fctx.globalAlpha = alpha;
+      fctx.drawImage(sprite, cx, base - h - jumpOff, w, h);
 
       if (a.self && pop === 1) {
         selfX = cx;
@@ -788,15 +774,15 @@ export function createCrowd(
         const r = (4 + t * 10) * cell;
         const mx = cx + w / 2;
         const my = base - (sprite.height * cell) / 2;
-        ctx.globalAlpha = (1 - t) * 0.8;
-        ctx.fillStyle = "#ffd166";
+        fctx.globalAlpha = (1 - t) * 0.8;
+        fctx.fillStyle = "#ffd166";
         for (let k = 0; k < 6; k++) {
           const ang = (k / 6) * Math.PI * 2;
-          ctx.fillRect(Math.round((mx + Math.cos(ang) * r) / cell) * cell, Math.round((my + Math.sin(ang) * r) / cell) * cell, cell, cell);
+          fctx.fillRect(Math.round((mx + Math.cos(ang) * r) / cell) * cell, Math.round((my + Math.sin(ang) * r) / cell) * cell, cell, cell);
         }
       }
     }
-    ctx.globalAlpha = 1;
+    fctx.globalAlpha = 1;
     scenery?.drawFront?.(ctx, clock, animated);
 
     if (others.length) drawOthers(animated);
@@ -878,28 +864,13 @@ export function createCrowd(
     emoteOther(emoji, shout) {
       if (document.hidden) return;
       const e: Emote = { emoji, shout, created: performance.now(), start: performance.now(), jitter: 0, lines: [], wrapKey: -1, lineW: 0 };
-      // Prefer a sprite whose head and the space above it are in view (not behind a card).
-      const picks: Actor[] = [];
-      for (const a of actors) {
-        if (a.self || a.leaving || a.age < 0) continue;
-        const x = a.x + a.w / 2;
-        const top = baseOf(a) - a.h;
-        if (isClear(x, top + a.cell) && isClear(x, top - 14 * a.cell)) picks.push(a);
-      }
+      // Every visitor on the floor is in view: any of them can send it; nobody there, it rises mid-floor.
+      const picks = actors.filter((a) => !a.self && !a.leaving && a.age >= 0);
       if (picks.length) {
         const a = picks[Math.floor(Math.random() * picks.length)];
         others.push({ a, x: a.x + a.w / 2, top: baseOf(a) - a.h - 2 * a.cell, e });
       } else {
-        // Nobody in view: the salve rises from a visible ledge instead.
-        const spots: number[] = [];
-        for (let i = 0; i < plats.length; i++) {
-          const pl = plats[i];
-          const x = (pl.x0 + pl.x1) / 2;
-          if (isClear(x, pl.y - 2 * px) && isClear(x, pl.y - 18 * px)) spots.push(i);
-        }
-        if (!spots.length) return;
-        const pl = plats[spots[Math.floor(Math.random() * spots.length)]];
-        others.push({ a: null, x: (pl.x0 + pl.x1) / 2, top: pl.y - 4 * px, e });
+        others.push({ a: null, x: W / 2, top: plats[0].y - 4 * px, e });
       }
       if (others.length > MAX_EMOTES) others.splice(0, others.length - MAX_EMOTES);
       redrawStatic();
@@ -937,11 +908,12 @@ export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsS
   const { online, visits } = usePresence();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLCanvasElement>(null);
+  const floorRef = useRef<HTMLCanvasElement>(null);
   const hudRef = useRef<HTMLDivElement>(null);
   const crowdRef = useRef<Crowd | null>(null);
 
   useEffect(() => {
-    const crowd = createCrowd(canvasRef.current!, overlayRef.current!, getVisitorId(), youLabel, hudRef.current);
+    const crowd = createCrowd(canvasRef.current!, overlayRef.current!, floorRef.current!, getVisitorId(), youLabel, hudRef.current);
     crowdRef.current = crowd;
     return () => crowd.destroy();
   }, [youLabel]);
@@ -967,6 +939,7 @@ export default function PixelCrowd({ onlineLabel, youLabel, visitsLabel, visitsS
   return (
     <>
       <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
+      <canvas ref={floorRef} className={styles.floor} aria-hidden="true" />
       <canvas ref={overlayRef} style={OVERLAY_STYLE} aria-hidden="true" />
       <div ref={hudRef} className={styles.hud}>
         <span className={styles.dot} aria-hidden="true">

@@ -73,12 +73,30 @@ export interface SelfReport {
   kind: "score" | "stages"; // "65/100" score, or confirmed rows out of their stage table
   done: number;
   total: number;
+  partial: number; // stages in progress (count half in the %)
   stages: AuthorStage[] | null;
+}
+
+// A recent post from the researcher's X profile (lib/x-posts.ts), as plain text.
+export interface XPost {
+  id: string;
+  url: string; // built from validated author + id
+  text: string;
+  date: string; // ISO
+  kind: "post" | "reply" | "repost";
+  author: string; // original author; differs from the profile for reposts
+}
+
+export interface XPosts {
+  posts: XPost[];
+  fetchedAt: string; // when this list was last fetched successfully
+  stale?: boolean; // true when the live fetch failed and this is the stored list
 }
 
 export interface RepoView extends RepoSnapshot {
   summary: RepoSummary;
   selfReport: SelfReport | null;
+  xPosts: XPosts | null;
 }
 
 export interface DashboardData {

@@ -1,92 +1,121 @@
-import { STAGES, type SelfReport, type Stage, type StageState } from "@/lib/types";
+import type { Progress, ProgressRow } from "@/lib/progress";
 import { fill, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./ProgressBar.module.css";
 
-const STATE_VALUE: Record<StageState, number> = { done: 1, partial: 0.5, none: 0 };
-
-export function progressPercent(stages: Record<Stage, StageState>) {
-  return Math.round(STAGES.reduce((sum, s) => sum + s.weight * STATE_VALUE[stages[s.id]], 0));
-}
-
 interface Props {
-  stages?: Record<Stage, StageState>;
-  selfReport: SelfReport | null;
+  progress: Progress;
   dict: Dictionary["progress"];
 }
 
-export default function ProgressBar({ stages, selfReport, dict }: Props) {
-  // The researcher's own published figure wins; the AI stage estimate is the fallback.
-  const percent = selfReport ? selfReport.percent : stages ? progressPercent(stages) : null;
-  const title = selfReport ? dict.titleAuthor : dict.title;
-  const value = percent === null ? "?" : selfReport ? `${percent}%` : `~${percent}%`;
-  const source =
-    selfReport &&
-    fill(selfReport.kind === "score" ? dict.authorScore : dict.authorStages, {
-      done: selfReport.done,
-      total: selfReport.total,
-    });
+const rowName = (r: ProgressRow, dict: Dictionary["progress"]) => r.name ?? (r.stage ? dict.stages[r.stage] : "");
+const rowStatus = (r: ProgressRow, dict: Dictionary["progress"]) => r.status ?? dict.states[r.state];
+
+/** Big number + source chip + one block per stage + the next stage. The full list lives in StageList. */
+export default function ProgressBar({ progress, dict }: Props) {
+  const { percent, source, kind, rows, next } = progress;
+  const value = percent === null ? "?" : source === "ai" ? `~${percent}%` : `${percent}%`;
+  const caption =
+    source === "author"
+      ? fill(kind === "score" ? dict.authorScore : progress.partial ? dict.authorStagesPartial : dict.authorStages, {
+          done: progress.done,
+          total: progress.total,
+          partial: progress.partial,
+        })
+      : source === "ai"
+        ? dict.noteAiShort
+        : dict.unknown;
+  const nextText = next
+    ? fill(dict.next, { stage: rowName(next, dict) })
+    : rows.length > 0 && source === "author"
+      ? dict.allDone
+      : null;
 
   return (
-    <section className={styles.progress} aria-label={dict.title}>
-      <div className={styles.head}>
-        <span className={styles.title}>{title}</span>
-        <span className={styles.value}>{value}</span>
+    <section className={styles.progress} aria-label={dict.title} data-source={source ?? "none"}>
+      <div className={styles.hero}>
+        <span className={styles.pct}>{value}</span>
+        {source && (
+          <span className={styles.tag} data-source={source}>
+            {source === "author" ? dict.sourceAuthor : dict.sourceAi}
+          </span>
+        )}
       </div>
 
       <div
-        className={styles.bar}
         role="meter"
-        aria-label={title}
+        aria-label={dict.title}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={percent ?? undefined}
-        aria-valuetext={percent === null ? dict.unknown : source ? `${value} (${source})` : value}
+        aria-valuetext={percent === null ? dict.unknown : `${value} — ${caption}`}
       >
-        {selfReport ? (
-          <span className={styles.fill} style={{ width: `${selfReport.percent}%` }} />
-        ) : STAGES.map((s) => (
-          <span
-            key={s.id}
-            className={styles.segment}
-            data-state={stages?.[s.id] ?? "unknown"}
-            style={{ flexGrow: s.weight }}
-            title={`${dict.stages[s.id]}: ${stages ? dict.states[stages[s.id]] : dict.unknown}`}
-          />
-        ))}
+        {kind === "score" ? (
+          // A 0–100 score: continuous fill, plus one pip per milestone of the author's table.
+          <>
+            <div className={styles.bar}>
+              <span className={styles.fill} style={{ width: `${percent}%` }} />
+            </div>
+            {rows.length > 0 && (
+              <div className={styles.pips} aria-hidden="true">
+                {rows.map((r, i) => (
+                  <span key={i} className={styles.pip} data-state={r.state} title={`${rowName(r, dict)}: ${rowStatus(r, dict)}`} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          // Stage counts: each block is one stage, so the bar itself reads "5 of 8".
+          <div className={styles.segs} aria-hidden="true">
+            {(rows.length ? rows : Array.from({ length: 6 }, () => null)).map((r, i) => (
+              <span
+                key={i}
+                className={styles.seg}
+                data-state={r?.state ?? "unknown"}
+                style={{ flexGrow: r?.weight ?? 1 }}
+                title={r ? `${rowName(r, dict)}: ${rowStatus(r, dict)}` : undefined}
+              />
+            ))}
+          </div>
+        )}
       </div>
-      {source && <p className={styles.source}>{source}</p>}
 
-      {selfReport?.stages ? (
-        <div className={styles.details}>
-          <h3 className={styles.detailsTitle}>{dict.detailsAuthor}</h3>
-          <ol className={styles.authorList}>
-            {selfReport.stages.map((s, i) => (
-              <li key={i} data-state={s.state}>
-                <span className={styles.dot} aria-hidden="true" />
-                <span>{s.name}</span>
-                <span className={styles.state}>{s.status}</span>
-              </li>
-            ))}
-          </ol>
-          <p className={styles.note}>{dict.noteAuthorStages}</p>
-        </div>
-      ) : stages ? (
-        <div className={styles.details}>
-          <h3 className={styles.detailsTitle}>{dict.details}</h3>
-          <ol>
-            {STAGES.map((s) => (
-              <li key={s.id} data-state={stages[s.id]}>
-                <span className={styles.dot} aria-hidden="true" />
-                <span>{dict.stages[s.id]}</span>
-                <span className={styles.state}>{dict.states[stages[s.id]]}</span>
-              </li>
-            ))}
-          </ol>
-          <p className={styles.note}>{selfReport ? dict.noteAuthor : dict.note}</p>
-        </div>
-      ) : (
-        <p className={styles.note}>{dict.unknown}</p>
+      <p className={styles.caption}>{caption}</p>
+      {nextText && (
+        <p className={styles.next}>
+          <span aria-hidden="true">▸ </span>
+          {nextText}
+          {next?.status && (
+            <span className={styles.nextStatus} lang="en">
+              {" "}
+              — {next.status}
+            </span>
+          )}
+        </p>
       )}
     </section>
+  );
+}
+
+/** Every stage with the author's own wording (or ours for the AI estimate), for the card drawer. */
+export function StageList({ progress, dict }: Props) {
+  if (!progress.rows.length) return <p className={styles.note}>{dict.unknown}</p>;
+  const isAuthor = progress.source === "author";
+  return (
+    <div>
+      <ol className={styles.stageList}>
+        {progress.rows.map((r, i) => (
+          <li key={i} data-state={r.state}>
+            <span className={styles.dot} aria-hidden="true" />
+            <span className={styles.stageName} lang={isAuthor ? "en" : undefined}>
+              {rowName(r, dict)}
+            </span>
+            <span className={styles.stageStatus} lang={isAuthor ? "en" : undefined}>
+              {rowStatus(r, dict)}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className={styles.note}>{isAuthor ? dict.noteAuthorStages : dict.note}</p>
+    </div>
   );
 }

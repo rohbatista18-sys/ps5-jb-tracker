@@ -1,0 +1,34 @@
+.text:not([data-open]) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--lines);
+  overflow: hidden;
+}
+
+@media (min-width: 760px) {
+  .text.mobileOnly:not([data-open]) {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
+  }
+}
+
+.toggle {
+  margin-top: 4px;
+  padding: 2px 0;
+  font-size: 1rem;
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+}
+
+.toggle:hover {
+  color: var(--yellow);
+}
+
+@media (pointer: coarse) {
+  .toggle {
+    min-height: var(--tap);
+  }
+}

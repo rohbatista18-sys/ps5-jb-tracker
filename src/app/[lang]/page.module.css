@@ -3,12 +3,12 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 20px;
   width: 100%;
   max-width: 1600px;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 32px var(--gutter) 96px; /* bottom room for the online-counter HUD */
+  padding: 16px var(--gutter) 96px; /* bottom room for the online-counter HUD */
 }
 
 /* ---------- header ---------- */
@@ -16,8 +16,79 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   text-align: center;
+}
+
+.headerMain,
+.headerSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Wide screens: title on the left, language / last check / modal buttons on the right, so the
+   header takes ~170px and the dev cards start within the first screen. */
+@media (min-width: 1120px) {
+  .header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-5);
+    text-align: left;
+  }
+
+  .headerMain {
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .headerSide {
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+
+  .headerSide .headerActions {
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+
+  .headerSide .headerActions > button {
+    flex: 0 0 auto;
+  }
+
+  .header .titleTop {
+    font-size: 2.5rem;
+  }
+
+  .header .subtitle {
+    max-width: none;
+    font-size: 1.125rem;
+  }
+}
+
+/* Phones: the header stays short so the dev switcher shows up early. */
+@media (max-width: 759px) {
+  .header .subtitle {
+    font-size: 1.0625rem;
+  }
+
+  .headerSide .headerActions {
+    flex-wrap: nowrap;
+    gap: var(--space-2);
+    margin-top: 0;
+  }
+
+  .headerSide {
+    width: 100%;
+  }
+
+  .headerSide .headerActions > button {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 8px;
+  }
 }
 
 /* News + More repos: side by side when they fit, stacked otherwise. Both buttons get the
@@ -153,7 +224,7 @@
   }
 
   .page {
-    padding-top: 56px;
+    padding-top: 24px;
   }
 }
 

@@ -1,46 +1,146 @@
 .notice {
+  position: relative;
+}
+
+/* Full-bleed strip so the plane enters and leaves at the screen edges (body clips overflow-x). */
+.sky {
+  position: relative;
+  width: 100vw;
+  height: 84px;
+  margin-inline: calc(50% - 50vw);
+  overflow: hidden;
+}
+
+/* One 27s cycle: ~12s crossing right → left, then 15s off-screen before the next pass.
+   Starts just past the right edge (left: 100%) and ends fully past the left edge. */
+.flyer {
+  position: absolute;
+  top: 8px;
+  left: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  width: 100%;
-  padding: 40px 20px;
-  text-align: center;
-  background: var(--panel-solid);
-  box-shadow:
-    0 0 0 4px var(--magenta),
-    0 0 0 8px var(--yellow),
-    8px 8px 0 8px rgb(0 0 0 / 0.55);
+  white-space: nowrap;
+  animation: fly 27s linear infinite;
 }
 
-.title {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 5vw, 3.5rem);
-  line-height: 1.25;
-  color: var(--yellow);
-  text-transform: uppercase;
-  text-shadow: 4px 4px 0 var(--magenta);
-  text-wrap: balance;
-  animation: pulse 1.2s steps(2) infinite;
-}
-
-.subtitle {
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 3vw, 2rem);
-  color: var(--cyan);
-  text-transform: uppercase;
-  text-wrap: balance;
-}
-
-@keyframes pulse {
-  50% {
-    color: var(--magenta);
-    text-shadow: 4px 4px 0 var(--yellow);
+@keyframes fly {
+  0% {
+    transform: translateX(0);
+  }
+  44.44%,
+  100% {
+    transform: translateX(calc(-100vw - 100%));
   }
 }
 
+.plane {
+  flex: none;
+  width: 100px;
+  height: 60px;
+  animation: bob 0.8s steps(2, jump-none) infinite alternate;
+}
+
+.propA,
+.propB {
+  animation: spin 0.16s steps(1, end) infinite;
+}
+
+.propB {
+  animation-delay: -0.08s;
+}
+
+@keyframes spin {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes bob {
+  to {
+    transform: translateY(6px);
+  }
+}
+
+.rope {
+  flex: none;
+  width: 44px;
+  height: 0;
+  border-top: 2px dashed var(--ink-dim);
+}
+
+/* Cloth banner in the wind: every slice runs the same smooth swing, offset in time by its index,
+   so a wave rolls from the rope to the swallow-tail end. A slower tilt on its own period keeps
+   the motion from looking mechanical. --amp (0 → 1) makes the end near the rope sway least. */
+.banner {
+  flex: none;
+  display: flex;
+  font-family: var(--font-display);
+  font-size: clamp(0.8125rem, 2vw, 1.125rem);
+  color: var(--bg-deep);
+  text-transform: uppercase;
+}
+
+.slice {
+  /* 1px overlap hides the hairline seams between slices while they move. */
+  margin-right: -1px;
+  padding: 8px 1px 8px 0;
+  background: var(--yellow);
+  box-shadow:
+    inset 0 4px 0 #fff3b0,
+    inset 0 -4px 0 #c99a16;
+  animation:
+    wave 1.6s ease-in-out calc(var(--i) * -0.09s) infinite alternate,
+    tilt 2.7s ease-in-out calc(var(--i) * -0.13s) infinite alternate;
+}
+
+.slice:first-child {
+  padding-left: 20px;
+}
+
+.star {
+  color: var(--magenta);
+}
+
+/* Swallow-tail end of the cloth. */
+.tail {
+  width: 32px;
+  clip-path: polygon(0 0, 100% 0, 40% 50%, 100% 100%, 0 100%);
+}
+
+@keyframes wave {
+  from {
+    translate: 0 calc(var(--amp) * -9px);
+  }
+  to {
+    translate: 0 calc(var(--amp) * 9px);
+  }
+}
+
+@keyframes tilt {
+  from {
+    rotate: calc(var(--amp) * -2.5deg);
+  }
+  to {
+    rotate: calc(var(--amp) * 2.5deg);
+  }
+}
+
+/* No flight for reduced motion: the banner simply rests in the middle of the strip. */
 @media (prefers-reduced-motion: reduce) {
-  .title {
+  .flyer {
+    left: 50%;
+    transform: translateX(-50%);
     animation: none;
+  }
+
+  .plane,
+  .propA,
+  .propB,
+  .slice {
+    animation: none;
+  }
+
+  .propB {
+    opacity: 0;
   }
 }

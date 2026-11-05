@@ -129,7 +129,13 @@ export default function Reactions({ repo, nickname, locale, text }: Props) {
         </button>
       ))}
 
-      <p id={statusId} className={status?.warn ? styles.warning : styles.remaining} hidden={!status}>
+      {/* The quota line is only shown after a send or as a warning; otherwise it stays available to
+          screen readers (aria-describedby) without taking a row in the card. */}
+      <p
+        id={statusId}
+        className={status?.warn ? styles.warning : result !== null ? styles.remaining : "sr-only"}
+        hidden={!status}
+      >
         {status?.msg}
       </p>
       <span className="sr-only" role="status">
