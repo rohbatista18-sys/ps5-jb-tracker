@@ -4,10 +4,10 @@ const en = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Track the public PS5 firmware 14.10 jailbreak research (ZigZagBoi1, pastawithpesto, kuzibelit and oniz93) in one place, with AI summaries, last commit times and donation links.",
+      "Track the public PS5 firmware 14.10 jailbreak research in one place, with AI summaries, last commit times and donation links.",
   },
   header: {
-    subtitle: "Progress of the 4 public firmware 14.10 jailbreak research projects, in one place.",
+    subtitle: "Progress of the {n} public firmware 14.10 jailbreak research projects, in one place.",
     lastChecked: "Last checked",
     language: "Language",
   },
@@ -162,10 +162,10 @@ const es: Dictionary = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Sigue en un solo lugar las investigaciones públicas de jailbreak del PS5 en el firmware 14.10 (ZigZagBoi1, pastawithpesto, kuzibelit y oniz93), con resúmenes por IA, último commit y enlaces de donación.",
+      "Sigue en un solo lugar las investigaciones públicas de jailbreak del PS5 en el firmware 14.10, con resúmenes por IA, último commit y enlaces de donación.",
   },
   header: {
-    subtitle: "El progreso de las 4 investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
+    subtitle: "El progreso de las {n} investigaciones públicas de jailbreak del firmware 14.10, en un solo lugar.",
     lastChecked: "Última verificación",
     language: "Idioma",
   },
@@ -318,10 +318,10 @@ const pt: Dictionary = {
   meta: {
     title: "PS5 14.10 Jailbreak Tracker",
     description:
-      "Acompanhe em um só lugar o progresso das pesquisas públicas de jailbreak do PS5 no firmware 14.10 (ZigZagBoi1, pastawithpesto, kuzibelit e oniz93), com resumos por IA, último commit e links de doação.",
+      "Acompanhe em um só lugar o progresso das pesquisas públicas de jailbreak do PS5 no firmware 14.10, com resumos por IA, último commit e links de doação.",
   },
   header: {
-    subtitle: "O progresso das 4 pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
+    subtitle: "O progresso das {n} pesquisas públicas de jailbreak do firmware 14.10, num só lugar.",
     lastChecked: "Última verificação",
     language: "Idioma",
   },

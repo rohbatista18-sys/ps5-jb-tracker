@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useSyncExternalStore, type ReactNode } from "react";
+import { useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import styles from "./DevSwitcher.module.css";
 
 export interface DevTile {
@@ -82,7 +82,20 @@ export default function DevSwitcher({ tiles, label, nextLabel, gridClass, childr
       {ready && /^[a-z0-9-]+$/.test(active) && (
         <style>{`@media (max-width: 759px) { [data-dev-grid][data-js] > :not([data-dev="${active}"]) { display: none; } }`}</style>
       )}
-      <div className={gridClass} data-dev-grid="" data-js={ready || undefined} data-active={active}>
+      {/* Column count follows how many devs the admin config has (max 4 per row on desktop,
+          2 on tablets), so removing or adding a dev never leaves an empty column. */}
+      <div
+        className={gridClass}
+        data-dev-grid=""
+        data-js={ready || undefined}
+        data-active={active}
+        style={
+          {
+            "--cols-md": Math.max(1, Math.min(tiles.length, 2)),
+            "--cols-lg": Math.max(1, Math.min(tiles.length, 4)),
+          } as CSSProperties
+        }
+      >
         {children}
       </div>
 

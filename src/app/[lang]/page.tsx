@@ -68,7 +68,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
-  const { guide, banner } = (await getSiteConfig()).notices;
+  const site = await getSiteConfig();
+  const { guide, banner } = site.notices;
 
   return (
     <div className={styles.page}>
@@ -87,7 +88,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
             <span className={styles.titleTop}>PS5 14.10</span>
             <span className={styles.titleBottom}>Jailbreak Tracker</span>
           </h1>
-          <p className={styles.subtitle}>{dict.header.subtitle}</p>
+          <p className={styles.subtitle}>{dict.header.subtitle.replace("{n}", String(site.researchers.length))}</p>
         </div>
         <div className={styles.headerSide}>
           <LanguageSwitcher current={lang} label={dict.header.language} />
