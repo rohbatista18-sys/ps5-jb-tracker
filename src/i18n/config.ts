@@ -7,9 +7,9 @@ export const LOCALE_COOKIE = "lang";
 
 export const hasLocale = (value: string): value is Locale => (LOCALES as readonly string[]).includes(value);
 
-export const INTL_TAG: Record<Locale, string> = { en: "en-US", es: "es", pt: "pt-BR" };
-export const OG_LOCALE: Record<Locale, string> = { en: "en_US", es: "es_ES", pt: "pt_BR" };
-export const LOCALE_NAME: Record<Locale, string> = { en: "English", es: "Español", pt: "Português" };
+export const INTL_TAG: Record<Locale, string> = { en: "en-US", es: "es", fr: "fr-FR", pt: "pt-BR" };
+export const OG_LOCALE: Record<Locale, string> = { en: "en_US", es: "es_ES", fr: "fr_FR", pt: "pt_BR" };
+export const LOCALE_NAME: Record<Locale, string> = { en: "English", es: "Español", fr: "Français", pt: "Português" };
 
 // ISO 3166-1 alpha-2 codes as sent by Vercel in `x-vercel-ip-country`.
 const PT_COUNTRIES = new Set(["BR", "PT", "AO", "MZ", "CV", "GW", "ST", "TL"]);
@@ -17,12 +17,19 @@ const ES_COUNTRIES = new Set([
   "ES", "MX", "AR", "CO", "CL", "PE", "VE", "EC", "GT", "CU", "BO", "DO",
   "HN", "PY", "SV", "NI", "CR", "PA", "UY", "PR", "GQ",
 ]);
+// Countries where French is the main language of the web. Belgium, Switzerland and Canada are
+// left to the browser language, since many visitors there read Dutch, German or English.
+const FR_COUNTRIES = new Set([
+  "FR", "MC", "LU", "HT", "SN", "CI", "CM", "ML", "BF", "NE", "TG", "BJ",
+  "GA", "CG", "CD", "GN", "MG", "TD", "CF", "BI", "DJ", "KM", "RE", "GP", "MQ", "GF", "YT", "NC", "PF",
+]);
 
 export function localeFromCountry(country: string | null): Locale | null {
   if (!country) return null;
   const c = country.toUpperCase();
   if (PT_COUNTRIES.has(c)) return "pt";
   if (ES_COUNTRIES.has(c)) return "es";
+  if (FR_COUNTRIES.has(c)) return "fr";
   return null;
 }
 

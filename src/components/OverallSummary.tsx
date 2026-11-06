@@ -21,7 +21,7 @@ export default function OverallSummary({ overall, locale, dict, aiHint }: Props)
       <div className={styles.body}>
         <Clamp lines={3} more={dict.more} less={dict.less} mobileOnly>
           <p className={styles.text}>
-            {overall.text[locale]}
+            {overall.text[locale] ?? overall.text.en}
             <span className={styles.cursor} aria-hidden="true" />
           </p>
         </Clamp>

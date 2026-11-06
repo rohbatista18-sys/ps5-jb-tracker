@@ -6,8 +6,8 @@ import type { DonationLink, Localized, RepoConfig } from "@/lib/types";
 import { saveNotices, saveResearchers, type SaveResult } from "./actions";
 import styles from "./admin.module.css";
 
-const LOCALES = ["pt", "en", "es"] as const;
-const LOCALE_LABEL = { pt: "Português", en: "English", es: "Español" } as const;
+const LOCALES = ["pt", "en", "es", "fr"] as const;
+const LOCALE_LABEL = { pt: "Português", en: "English", es: "Español", fr: "Français" } as const;
 
 const slug = (s: string) =>
   s

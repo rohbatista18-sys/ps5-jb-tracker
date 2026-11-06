@@ -35,7 +35,7 @@ export interface RepoSnapshot {
   error?: string; // set when GitHub fetch failed
 }
 
-export const LOCALES = ["en", "es", "pt"] as const;
+export const LOCALES = ["en", "es", "fr", "pt"] as const;
 export type Locale = (typeof LOCALES)[number];
 export type Localized = Record<Locale, string>;
 

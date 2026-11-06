@@ -149,6 +149,20 @@ async function readStored(): Promise<Partial<SiteConfig> | null> {
   return kvGet<Partial<SiteConfig>>(CONFIG_KEY);
 }
 
+// Config saved before a language existed has no text for it: fill only those gaps with the
+// default text, so adding a language never throws away what the admins wrote.
+function withLocaleDefaults(stored: unknown): unknown {
+  if (!stored || typeof stored !== "object") return stored;
+  const s = stored as Record<string, Record<string, unknown>>;
+  const d = DEFAULT_CONFIG.notices;
+  const fill = (v: unknown, def: Localized) => ({ ...def, ...(v && typeof v === "object" ? v : {}) });
+  return {
+    ...s,
+    guide: { ...s.guide, text: fill(s.guide?.text, d.guide.text), link: fill(s.guide?.link, d.guide.link) },
+    banner: { ...s.banner, title: fill(s.banner?.title, d.banner.title), subtitle: fill(s.banner?.subtitle, d.banner.subtitle) },
+  };
+}
+
 /** Stored config merged over the defaults; a broken section falls back to its default. */
 export async function loadSiteConfig(): Promise<SiteConfig> {
   let stored: Partial<SiteConfig> | null = null;
@@ -166,7 +180,7 @@ export async function loadSiteConfig(): Promise<SiteConfig> {
   };
   return {
     researchers: stored?.researchers ? safe(() => validateResearchers(stored.researchers), DEFAULT_CONFIG.researchers) : DEFAULT_CONFIG.researchers,
-    notices: stored?.notices ? safe(() => validateNotices(stored.notices), DEFAULT_CONFIG.notices) : DEFAULT_CONFIG.notices,
+    notices: stored?.notices ? safe(() => validateNotices(withLocaleDefaults(stored.notices)), DEFAULT_CONFIG.notices) : DEFAULT_CONFIG.notices,
   };
 }
 

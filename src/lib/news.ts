@@ -18,14 +18,15 @@ const QUERY = '"PS5" "14.10" jailbreak when:60d';
 const FEED_LOCALE: Record<Locale, string> = {
   en: "hl=en-US&gl=US&ceid=US:en",
   es: "hl=es-419&gl=MX&ceid=MX:es-419",
+  fr: "hl=fr&gl=FR&ceid=FR:fr",
   pt: "hl=pt-BR&gl=BR&ceid=BR:pt-419",
 };
 const MAX_ITEMS = 9;
 const TIMEOUT_MS = 8000;
 
 // Keep it on-topic and away from scam bait ("free jailbreak download" and the like).
-const MUST_MATCH = [/14\.10/, /jailbreak|exploit|hack|desbloque|crack|kernel|firmware/i];
-const REJECT_TITLE = /download|descarga|baixar|gr[aá]tis|gratis|free|telegram|discord|whatsapp|link in bio|tutorial|how to|c[oó]mo hacer|como fazer/i;
+const MUST_MATCH = [/14\.10/, /jailbreak|exploit|hack|desbloque|d[ée]bloq|faille|crack|kernel|firmware/i];
+const REJECT_TITLE = /download|descarga|baixar|t[ée]l[ée]charg|gr[aá]tis|gratis|gratuit|free|telegram|discord|whatsapp|link in bio|tutorial|tuto|how to|c[oó]mo hacer|como fazer|comment faire/i;
 const REJECT_SOURCE = /youtube|tiktok|facebook|instagram|x\.com|twitter/i;
 
 const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };

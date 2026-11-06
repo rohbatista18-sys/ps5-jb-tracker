@@ -272,7 +272,7 @@ export default function RepoCard({ repo, locale, dict }: Props) {
               ),
             }}
           >
-            <p>{summary.text[locale]}</p>
+            <p>{summary.text[locale] ?? summary.text.en}</p>
           </Clamp>
           {summary.fallback && <p className={styles.aiHint}>{t.aiHint}</p>}
         </section>
