@@ -41,18 +41,12 @@ export const env = {
   get supabaseSecretKey() {
     return read("SUPABASE_SECRET_KEY");
   },
-  // Admin page: GitHub OAuth app + session signing secret + who may log in (comma-separated).
-  get githubOAuthClientId() {
-    return read("GITHUB_OAUTH_CLIENT_ID");
-  },
-  get githubOAuthClientSecret() {
-    return read("GITHUB_OAUTH_CLIENT_SECRET");
+  // Admin page: users as "name:salt:hash" (scripts/admin-password.mjs) + session signing secret.
+  get adminUsers() {
+    return read("ADMIN_USERS");
   },
   get adminSessionSecret() {
     return read("ADMIN_SESSION_SECRET");
-  },
-  get adminGithubLogins() {
-    return read("ADMIN_GITHUB_LOGINS");
   },
   get cronSecret() {
     return read("CRON_SECRET");

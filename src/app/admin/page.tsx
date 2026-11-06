@@ -7,9 +7,8 @@ import styles from "./admin.module.css";
 
 const ERRORS: Record<string, string> = {
   config: "O login de admin ainda não está configurado no servidor.",
-  state: "A tentativa de login expirou ou foi adulterada. Tente de novo.",
-  github: "Não foi possível confirmar sua conta com o GitHub. Tente de novo.",
-  denied: "Essa conta do GitHub não tem permissão de admin.",
+  login: "Usuário ou senha incorretos.",
+  wait: "Muitas tentativas. Espere 15 minutos e tente de novo.",
 };
 
 async function Admin({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -21,9 +20,8 @@ async function Admin({ searchParams }: { searchParams: Promise<Record<string, st
       <section className={styles.box}>
         <h2 className={styles.h2}>Admin não configurado</h2>
         <p>
-          Para ativar o login, defina no servidor as variáveis <code>GITHUB_OAUTH_CLIENT_ID</code>,{" "}
-          <code>GITHUB_OAUTH_CLIENT_SECRET</code>, <code>ADMIN_SESSION_SECRET</code> (32+ caracteres) e{" "}
-          <code>ADMIN_GITHUB_LOGINS</code>.
+          Para ativar o login, defina no servidor as variáveis <code>ADMIN_USERS</code> (gerada com{" "}
+          <code>node scripts/admin-password.mjs</code>) e <code>ADMIN_SESSION_SECRET</code> (32+ caracteres).
         </p>
       </section>
     );
@@ -39,11 +37,24 @@ async function Admin({ searchParams }: { searchParams: Promise<Record<string, st
             {message}
           </p>
         )}
-        <p>Só contas autorizadas do GitHub entram aqui.</p>
-        {/* A plain GET form, not <Link>: this route redirects to github.com and must never be prefetched. */}
-        <form action="/api/admin/login" method="get">
+        <form action="/api/admin/login" method="post" className={styles.loginForm}>
+          <label className={styles.field}>
+            <span className={styles.fieldLabel}>Usuário</span>
+            <input className={styles.input} name="user" autoComplete="username" required maxLength={60} />
+          </label>
+          <label className={styles.field}>
+            <span className={styles.fieldLabel}>Senha</span>
+            <input
+              className={styles.input}
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              maxLength={200}
+            />
+          </label>
           <button type="submit" className={`px-btn ${styles.login}`}>
-            Entrar com GitHub
+            Entrar
           </button>
         </form>
       </section>
