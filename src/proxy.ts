@@ -32,5 +32,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|.*\\..*).*)"],
+  // /admin has its own layout and no locale prefix.
+  matcher: ["/((?!api|admin|_next|.*\\..*).*)"],
 };

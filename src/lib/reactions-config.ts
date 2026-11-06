@@ -3,7 +3,7 @@
 interface ReactionDef {
   key: string;
   emoji: string;
-  only?: "zig" | "pasta" | "kuzi" | "oniz";
+  only?: string; // dev id
   shout?: string;
 }
 

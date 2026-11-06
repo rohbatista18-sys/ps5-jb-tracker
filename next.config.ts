@@ -33,7 +33,8 @@ const csp = [
   "manifest-src 'self'",
   "frame-ancestors 'none'",
   "base-uri 'self'",
-  "form-action 'self'",
+  // github.com: the admin "Sign in with GitHub" form redirects there (form-action covers redirects).
+  "form-action 'self' https://github.com",
   ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ");
 

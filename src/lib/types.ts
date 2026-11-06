@@ -7,7 +7,7 @@ export interface DonationLink {
 }
 
 export interface RepoConfig {
-  id: "zig" | "pasta" | "kuzi" | "oniz";
+  id: string; // short slug, stable: keys reactions and stored summaries (e.g. "zig")
   nickname: string; // same as the GitHub username
   owner: string;
   repo: string;

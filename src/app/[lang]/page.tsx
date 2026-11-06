@@ -12,6 +12,7 @@ import GuideNotice from "@/components/GuideNotice";
 import BigNotice from "@/components/BigNotice";
 import DevSwitcher from "@/components/DevSwitcher";
 import { progressOf } from "@/lib/progress";
+import { getSiteConfig } from "@/lib/site-config";
 import { hasLocale, type Locale } from "@/i18n/config";
 import { getDictionary, type Dictionary } from "@/i18n/dictionaries";
 import styles from "./page.module.css";
@@ -67,11 +68,18 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
   if (!hasLocale(lang)) notFound();
   const dict = getDictionary(lang);
+  const { guide, banner } = (await getSiteConfig()).notices;
 
   return (
     <div className={styles.page}>
-      <GuideNotice dict={dict.guide} newTab={dict.card.newTab} />
-      <BigNotice dict={dict.bigNotice} />
+      {guide.enabled && (
+        <GuideNotice
+          dict={{ ...dict.guide, text: guide.text[lang], link: guide.link[lang] }}
+          url={guide.url}
+          newTab={dict.card.newTab}
+        />
+      )}
+      {banner.enabled && <BigNotice dict={{ title: banner.title[lang], subtitle: banner.subtitle[lang] }} />}
       <header className={styles.header}>
         <div className={styles.headerMain}>
           <PsButtons className={styles.buttons} />

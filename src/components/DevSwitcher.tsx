@@ -77,7 +77,12 @@ export default function DevSwitcher({ tiles, label, nextLabel, gridClass, childr
         ))}
       </div>
 
-      <div className={gridClass} data-js={ready || undefined} data-active={active}>
+      {/* Only the chosen card shows on phones. Ids are admin-editable, so the rule is generated;
+          the data-js gate keeps every card visible before hydration. Ids are [a-z0-9-] only. */}
+      {ready && /^[a-z0-9-]+$/.test(active) && (
+        <style>{`@media (max-width: 759px) { [data-dev-grid][data-js] > :not([data-dev="${active}"]) { display: none; } }`}</style>
+      )}
+      <div className={gridClass} data-dev-grid="" data-js={ready || undefined} data-active={active}>
         {children}
       </div>
 

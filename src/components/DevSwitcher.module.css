@@ -17,14 +17,6 @@
     scroll-margin-top: 12px;
   }
 
-  /* Only the chosen card shows; the data-js gate keeps all cards visible before hydration. */
-  .switcher [data-js][data-active="zig"] > :not([data-dev="zig"]),
-  .switcher [data-js][data-active="pasta"] > :not([data-dev="pasta"]),
-  .switcher [data-js][data-active="kuzi"] > :not([data-dev="kuzi"]),
-  .switcher [data-js][data-active="oniz"] > :not([data-dev="oniz"]) {
-    display: none;
-  }
-
   .next {
     display: block;
     align-self: flex-end;

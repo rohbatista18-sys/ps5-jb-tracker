@@ -48,7 +48,8 @@ export async function POST(req: NextRequest) {
   } catch {
     return json({ error: "invalid json" }, 400);
   }
-  if (!isRepoId(data?.repo) || !isReactionKey(data?.reaction) || !isReactionAllowed(data.repo, data.reaction)) {
+  const repo = typeof data?.repo === "string" ? data.repo : "";
+  if (!(await isRepoId(repo)) || !isReactionKey(data?.reaction) || !isReactionAllowed(repo, data.reaction)) {
     return json({ error: "invalid reaction" }, 400);
   }
 
@@ -57,8 +58,8 @@ export async function POST(req: NextRequest) {
     const retry = Math.max(1, Math.ceil((Date.parse(quota.resetAt) - Date.now()) / 1000));
     return json({ error: "quota", remaining: 0, resetAt: quota.resetAt }, 429, { "Retry-After": String(retry) });
   }
-  const counts = withBaseline(await addReaction(data.repo, data.reaction));
-  const salve = { repo: data.repo, reaction: data.reaction, n: typeof data.n === "string" && NONCE.test(data.n) ? data.n : "" };
+  const counts = withBaseline(await addReaction(repo, data.reaction));
+  const salve = { repo, reaction: data.reaction, n: typeof data.n === "string" && NONCE.test(data.n) ? data.n : "" };
   after(() => broadcastSalve(salve));
-  return json({ repo: data.repo, counts, remaining: quota.remaining, resetAt: quota.resetAt });
+  return json({ repo, counts, remaining: quota.remaining, resetAt: quota.resetAt });
 }

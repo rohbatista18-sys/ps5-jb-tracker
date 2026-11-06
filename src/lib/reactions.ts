@@ -1,12 +1,24 @@
 import "server-only";
 import { getRedis } from "./redis";
 import { REPOS } from "./repos";
+import { getSiteConfig } from "./site-config";
 import { countersWithPrefix, hasSupabase, rpc } from "./supabase";
 import { REACTIONS, emptyCounts, reactionBaseline, type ReactionCounts, type ReactionKey } from "./reactions-config";
 import type { RepoConfig } from "./types";
 
 type RepoId = RepoConfig["id"];
 export type AllReactions = Record<RepoId, ReactionCounts>;
+
+// Dev ids come from the admin-editable site config; the hard-coded list is only the fallback.
+let ids: string[] = REPOS.map((r) => r.id);
+
+async function refreshIds() {
+  try {
+    ids = (await getSiteConfig()).researchers.map((r) => r.id);
+  } catch {
+    // keep the last known list
+  }
+}
 
 // One Redis hash for every dev (field = "<repo>:<reaction>"), read at most once per CACHE_MS per
 // server instance, so polling visitors cost no Redis commands. Only aggregate counts are kept —
@@ -24,18 +36,21 @@ let cachedAt = 0;
 let loading: Promise<AllReactions> | null = null;
 let migrationChecked = false;
 
-export const isRepoId = (v: unknown): v is RepoId => REPOS.some((r) => r.id === v);
+export async function isRepoId(v: unknown): Promise<boolean> {
+  await refreshIds();
+  return typeof v === "string" && ids.includes(v);
+}
 
 /** Stored counts plus the pre-migration estimate, for display. Never written back to the store. */
 export const withBaseline = (counts: ReactionCounts): ReactionCounts =>
   Object.fromEntries(REACTIONS.map(({ key }) => [key, counts[key] + reactionBaseline(key)])) as ReactionCounts;
 
-const empty = () => Object.fromEntries(REPOS.map((r) => [r.id, emptyCounts()])) as AllReactions;
+const empty = () => Object.fromEntries(ids.map((id) => [id, emptyCounts()])) as AllReactions;
 
 function parse(raw: Record<string, unknown> | null): AllReactions {
   const all = empty();
-  for (const r of REPOS)
-    for (const { key } of REACTIONS) all[r.id][key] = Math.max(0, Number(raw?.[`${r.id}:${key}`]) || 0);
+  for (const id of ids)
+    for (const { key } of REACTIONS) all[id][key] = Math.max(0, Number(raw?.[`${id}:${key}`]) || 0);
   return all;
 }
 
@@ -100,6 +115,7 @@ async function loadSupabase(): Promise<AllReactions> {
 }
 
 async function load(): Promise<AllReactions> {
+  await refreshIds();
   if (hasSupabase()) {
     try {
       cache = await loadSupabase();
@@ -140,6 +156,7 @@ export async function getAllReactions(): Promise<AllReactions> {
 
 export async function addReaction(id: RepoId, reaction: ReactionKey): Promise<ReactionCounts> {
   const all = await getAllReactions();
+  all[id] ??= emptyCounts(); // a dev added in the admin since the counts were last loaded
   const field = `${id}:${reaction}`;
   if (hasSupabase()) {
     try {
